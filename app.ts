@@ -1,7 +1,10 @@
 import express, { Express, NextFunction, Request, Response } from "express";
 import CustomError from "./util/custom-error";
+import userRoutes from "./routes/user.route";
 
 const app: Express = express();
+
+app.use("/users", userRoutes);
 
 app.use(
   (
