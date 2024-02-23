@@ -1,12 +1,11 @@
-import express, { Express, NextFunction, Request, Response } from "express";
-import CustomError from "./util/custom-error";
-import userRoutes from "./routes/user.route";
 import bodyParser from "body-parser";
 import cors from "cors";
+import express, { Express, NextFunction, Request, Response } from "express";
+import userRoutes from "./routes/user.route";
+import CustomError from "./util/custom-error";
 
 const app: Express = express();
 
-app.use(bodyParser);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
