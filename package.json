@@ -6,7 +6,17 @@
   "scripts": {
     "build": "tsc",
     "start": "tsc && node dist/app.js",
-    "dev": "nodemon app.ts"
+    "dev": "nodemon app.ts",
+    "format": "prettier ./ --c"
+  },
+  "prettier": {
+    "singleQuote": false,
+    "bracketSpacing": true,
+    "bracketSameLine": false,
+    "arrowParens": "always",
+    "printWidth": 80,
+    "tabWidth": 2,
+    "semi": true
   },
   "author": "Lionel Kaneza",
   "license": "ISC",
