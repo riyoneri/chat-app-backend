@@ -17,12 +17,12 @@ app.use(
     error: CustomError,
     _request: Request,
     response: Response,
-    _next: NextFunction
+    _next: NextFunction,
   ) => {
     const { message, errors, status } = error;
 
     return response.status(status || 500).json({ message: errors || message });
-  }
+  },
 );
 
 app.listen(5000, () => console.log("[server]: 5000"));

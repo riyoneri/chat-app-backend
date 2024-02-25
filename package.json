@@ -7,7 +7,7 @@
     "build": "tsc",
     "start": "tsc && node dist/app.js",
     "dev": "nodemon app.ts",
-    "format": "prettier ./ --c"
+    "format": "prettier ./ --w"
   },
   "prettier": {
     "singleQuote": false,

@@ -8,7 +8,7 @@ import { serializeValidation } from "../util/validation";
 export const postCreateUser = (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const errors = validationResult(request);
@@ -16,7 +16,7 @@ export const postCreateUser = (
       const error = new CustomError(
         "Validation failed",
         400,
-        serializeValidation(errors)
+        serializeValidation(errors),
       );
 
       return next(error);

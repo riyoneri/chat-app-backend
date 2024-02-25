@@ -16,7 +16,7 @@ router.post(
       .bail()
       .custom((value) => {
         const user = database.users.find(
-          (user) => user.username.toLowerCase() === value?.toLowerCase()
+          (user) => user.username.toLowerCase() === value?.toLowerCase(),
         );
 
         if (user) throw new Error("Username is already taken");
@@ -27,7 +27,7 @@ router.post(
       .trim()
       .notEmpty({ ignore_whitespace: true }),
   ],
-  userController.postCreateUser
+  userController.postCreateUser,
 );
 
 export default router;

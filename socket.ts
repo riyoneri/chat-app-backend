@@ -15,7 +15,12 @@ export const config = {
     return io;
   },
   initializeSocket: (
-    newSocket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
+    newSocket: Socket<
+      DefaultEventsMap,
+      DefaultEventsMap,
+      DefaultEventsMap,
+      any
+    >,
   ) => {
     socket = newSocket;
     return socket;
