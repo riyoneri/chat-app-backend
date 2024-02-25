@@ -1,7 +1,7 @@
 import express from "express";
 import { body } from "express-validator";
 import * as userController from "../controllers/user-controller";
-import database from "../data/db";
+import database from "../data/database";
 
 const router = express.Router();
 
