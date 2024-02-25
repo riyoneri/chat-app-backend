@@ -12,7 +12,9 @@
   },
   "plugins": ["@typescript-eslint", "unicorn"],
   "rules": {
-    "no-unused-vars": "error",
-    "sort-imports": "error"
+    "no-unused-vars": [
+      "error",
+      { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }
+    ]
   }
 }
