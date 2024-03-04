@@ -6,6 +6,7 @@ import { extname, join } from "node:path";
 import * as userAuthcontroller from "../controllers/user-auth.controller";
 import { ensureDirectory } from "../util/file-system";
 import { getFileId } from "../util/generate-id";
+import User from "../models/user.model";
 
 const router = express.Router();
 
@@ -84,12 +85,22 @@ router.post(
       .isEmail()
       .withMessage("E-mail address is invalid")
       .bail()
-      .toLowerCase(),
+      .toLowerCase()
+      .custom((value) =>
+        User.findOne({ email: value }).then((user) => {
+          if (user) throw "E-mail address already exists";
+        }),
+      ),
     body("username", "Username is required")
       .trim()
       .notEmpty({ ignore_whitespace: true })
       .bail()
-      .toLowerCase(),
+      .toLowerCase()
+      .custom((value) =>
+        User.findOne({ username: value }).then((user) => {
+          if (user) throw "Username already exists";
+        }),
+      ),
     body("image", "Image is required")
       .notEmpty({ ignore_whitespace: true })
       .custom((_value, { req }) => {
