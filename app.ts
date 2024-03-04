@@ -7,6 +7,7 @@ import morgan from "morgan";
 import { exit } from "node:process";
 import userAuthRoutes from "./routes/user-auth.route";
 import CustomError from "./util/custom-error";
+import { join } from "node:path";
 config();
 
 const MONGODB_URL = process.env.MONGODB_URL;
@@ -15,6 +16,7 @@ const app: Express = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(express.static(join(process.cwd(), "public")));
 app.use(cors());
 app.use(morgan("dev"));
 app.use("/auth", userAuthRoutes);
