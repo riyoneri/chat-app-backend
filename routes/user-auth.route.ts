@@ -72,59 +72,74 @@ const requestBusboy = (
   request.pipe(busboy);
 };
 
-router.post(
-  "/register",
-  requestBusboy,
-  [
-    body("name", "Name is required")
-      .trim()
-      .notEmpty({ ignore_whitespace: true }),
-    body("email", "E-mail address is required")
-      .trim()
-      .notEmpty({ ignore_whitespace: true })
-      .isEmail()
-      .withMessage("E-mail address is invalid")
-      .bail()
-      .toLowerCase()
-      .custom((value) =>
-        User.findOne({ email: value }).then((user) => {
-          if (user) throw "E-mail address already exists";
+router
+  .post(
+    "/register",
+    requestBusboy,
+    [
+      body("name", "Name is required")
+        .trim()
+        .notEmpty({ ignore_whitespace: true }),
+      body("email", "E-mail address is required")
+        .trim()
+        .notEmpty({ ignore_whitespace: true })
+        .isEmail()
+        .withMessage("E-mail address is invalid")
+        .bail()
+        .toLowerCase()
+        .custom((value) =>
+          User.findOne({ email: value }).then((user) => {
+            if (user) throw "E-mail address already exists";
+          }),
+        ),
+      body("username", "Username is required")
+        .trim()
+        .notEmpty({ ignore_whitespace: true })
+        .bail()
+        .toLowerCase()
+        .custom((value) =>
+          User.findOne({ username: value }).then((user) => {
+            if (user) throw "Username already exists";
+          }),
+        ),
+      body("image", "Image is required")
+        .notEmpty({ ignore_whitespace: true })
+        .custom((_value, { req }) => {
+          if (req.body.fileErrors?.image) throw req.body.fileErrors?.image;
+          return true;
         }),
-      ),
-    body("username", "Username is required")
-      .trim()
-      .notEmpty({ ignore_whitespace: true })
-      .bail()
-      .toLowerCase()
-      .custom((value) =>
-        User.findOne({ username: value }).then((user) => {
-          if (user) throw "Username already exists";
-        }),
-      ),
-    body("image", "Image is required")
-      .notEmpty({ ignore_whitespace: true })
-      .custom((_value, { req }) => {
-        if (req.body.fileErrors?.image) throw req.body.fileErrors?.image;
-        return true;
-      }),
-    body("password", "Password is required")
-      .notEmpty({ ignore_whitespace: true })
-      .bail()
-      .matches(/\d/)
-      .withMessage("Password must contain atleast one number")
-      .matches(/[A-Z]/)
-      .withMessage("Password must contain uppercase character")
-      .matches(/[a-z]/)
-      .withMessage("Password must contain lowercase character")
-      .matches(/\W/)
-      .withMessage("Password must contain special character")
-      .isLength({ min: 8 })
-      .withMessage("Password must be 8+ characters"),
-    body("confirmPassword", "Confirm password is required")
-      .custom((value, { req }) => value === req.body.password)
-      .withMessage("Password must match"),
-  ],
-  userAuthcontroller.postRegister,
-);
+      body("password", "Password is required")
+        .notEmpty({ ignore_whitespace: true })
+        .bail()
+        .matches(/\d/)
+        .withMessage("Password must contain atleast one number")
+        .matches(/[A-Z]/)
+        .withMessage("Password must contain uppercase character")
+        .matches(/[a-z]/)
+        .withMessage("Password must contain lowercase character")
+        .matches(/\W/)
+        .withMessage("Password must contain special character")
+        .isLength({ min: 8 })
+        .withMessage("Password must be 8+ characters"),
+      body("confirmPassword", "Confirm password is required")
+        .custom((value, { req }) => value === req.body.password)
+        .withMessage("Password must match"),
+    ],
+    userAuthcontroller.postRegister,
+  )
+  .post(
+    "/",
+    [
+      body("emailOrUsername", "Email or username is required")
+        .notEmpty({ ignore_whitespace: true })
+        .trim()
+        .bail()
+        .toLowerCase(),
+      body("password", "Password is required")
+        .notEmpty({ ignore_whitespace: true })
+        .bail(),
+    ],
+    userAuthcontroller.postLogin,
+  );
 
 export default router;
