@@ -1,8 +1,6 @@
 import bodyParser from "body-parser";
 import cors from "cors";
 import express, { Express, NextFunction, Request, Response } from "express";
-import userRoutes from "./routes/user-routes";
-import dmsRoutes from "./routes/dms-routes";
 import CustomError from "./util/custom-error";
 
 const app: Express = express();
@@ -10,9 +8,6 @@ const app: Express = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
-
-app.use("/users", userRoutes);
-app.use("/dms", dmsRoutes);
 
 app.use(
   (

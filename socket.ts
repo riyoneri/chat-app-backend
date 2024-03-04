@@ -1,13 +1,7 @@
-interface Client {
-  userName: string;
-  socket: string;
-}
-
 import { Server, Socket } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 let io: Server;
 let socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
-export const clients: Client[] = [];
 
 export const config = {
   initializeIO: (httpServer: import("http").Server) => {
@@ -32,7 +26,7 @@ export const config = {
     return io;
   },
   getSocket: () => {
-    if (!io) {
+    if (!socket) {
       throw new Error("Socket.io not initialized!");
     }
     return socket;
