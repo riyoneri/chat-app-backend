@@ -1,6 +1,8 @@
 import bodyParser from "body-parser";
 import cors from "cors";
 import express, { Express, NextFunction, Request, Response } from "express";
+import morgan from "morgan";
+import userAuthRoutes from "./routes/user-auth.route";
 import CustomError from "./util/custom-error";
 
 const app: Express = express();
@@ -8,6 +10,8 @@ const app: Express = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
+app.use(morgan("dev"));
+app.use("/auth", userAuthRoutes);
 
 app.use(
   (
