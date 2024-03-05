@@ -7,14 +7,20 @@ import * as userAuthcontroller from "../controllers/user-auth.controller";
 import { ensureDirectory } from "../util/file-system";
 import { getFileId } from "../util/generate-id";
 import User from "../models/user.model";
+import CustomError from "../util/custom-error";
 
 const router = express.Router();
 
 const requestBusboy = (
   request: Request,
-  response: Response,
+  _response: Response,
   next: NextFunction,
 ) => {
+  if (!request.get("Content-Type")?.includes("multipart")) {
+    const error = new CustomError("Invalid data received", 400);
+    return next(error);
+  }
+
   const busboy = Busboy({
     headers: request.headers,
     limits: { fileSize: 1024 * 1024 * 2, files: 1 },
