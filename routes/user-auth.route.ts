@@ -128,6 +128,7 @@ router
         .isLength({ min: 8 })
         .withMessage("Password must be 8+ characters"),
       body("confirmPassword", "Confirm password is required")
+        .notEmpty({ ignore_whitespace: true })
         .custom((value, { req }) => value === req.body.password)
         .withMessage("Password must match"),
     ],
