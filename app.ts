@@ -30,7 +30,7 @@ app.use(
   ) => {
     const { message, errors, status } = error;
 
-    return response.status(status || 500).json({ message: errors || message });
+    response.status(status || 500).json({ message: errors || message });
   },
 );
 
