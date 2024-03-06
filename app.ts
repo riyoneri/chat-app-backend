@@ -4,10 +4,11 @@ import { config } from "dotenv";
 import express, { Express, NextFunction, Request, Response } from "express";
 import { connect } from "mongoose";
 import morgan from "morgan";
-import { exit } from "node:process";
-import userAuthRoutes from "./routes/user-auth.route";
-import CustomError from "./util/custom-error";
 import { join } from "node:path";
+import { exit } from "node:process";
+import userAuthRoute from "./routes/user-auth.route";
+import userRoute from "./routes/user.route";
+import CustomError from "./util/custom-error";
 config();
 
 const MONGODB_URL = process.env.MONGODB_URL;
@@ -19,7 +20,9 @@ app.use(bodyParser.json());
 app.use(express.static(join(process.cwd(), "public")));
 app.use(cors());
 app.use(morgan("dev"));
-app.use("/auth", userAuthRoutes);
+
+app.use("/auth", userAuthRoute);
+app.use("/", userRoute);
 
 app.use(
   (
