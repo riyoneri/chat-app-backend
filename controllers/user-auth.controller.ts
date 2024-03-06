@@ -40,13 +40,9 @@ export const postRegister = async (
     const savedUser = await userData.save();
 
     const transformedUser = savedUser.toJSON({
-      transform(document, returnValue) {
-        delete returnValue._id;
-        delete returnValue.createdAt;
-        delete returnValue.updatedAt;
+      transform(_document, returnValue) {
         delete returnValue.password;
         return {
-          _id: document._id,
           ...returnValue,
           imageUrl: `${request.protocol}://${request.headers.host}/${returnValue.imageUrl}`,
         };
