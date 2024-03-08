@@ -22,7 +22,7 @@ app.use(cors());
 app.use(morgan("dev"));
 
 app.use("/auth", userAuthRoute);
-app.use("/", userRoute);
+app.use(userRoute);
 
 app.use(
   (
