@@ -74,16 +74,41 @@ export const createChat = async (
     }
 
     if (request.user?.chatUsers.includes(newUserChat._id)) {
-      const conversation = await conversationModel.findOne({
-        participants: {
-          $and: [{ $in: [newUserChat._id] }, { $in: [request.user._id] }],
-        },
-      });
+      const conversation = await conversationModel
+        .findOne({
+          participants: { $all: [newUserChat._id, request.user._id] },
+        })
+        .populate("participants")
+        .transform((document) =>
+          document?.toJSON({
+            transform(_, returnValue) {
+              if (returnValue.participants) {
+                returnValue.participants =
+                  returnValue.participants[0]._id.toString() ===
+                  request.user?._id.toString()
+                    ? (returnValue.participants = returnValue.participants[1])
+                    : (returnValue.participants = returnValue.participants[0]);
+
+                returnValue.participants.imageUrl = `${request.protocol}://${request.headers.host}/${returnValue.participants.imageUrl}`;
+
+                delete returnValue.participants.password;
+              }
+
+              return returnValue;
+            },
+          }),
+        );
 
       if (!conversation) throw new CustomError("Internal server error");
 
       return response.status(201).json(conversation);
     }
+
+    request.user?.chatUsers.push(newUserChat._id);
+    newUserChat.chatUsers.push(request.user?._id);
+
+    await request.user?.save();
+    await newUserChat.save();
 
     const conversationData = new conversationModel({
       category: CONVERSATION_CATEGORIES.DIRECT,
@@ -94,9 +119,77 @@ export const createChat = async (
       },
     });
 
-    console.log(conversationData);
+    const savedConversation = await conversationData.save();
 
-    response.status(400).json({ message: "lion" });
+    const populatedConversation =
+      await savedConversation.populate("participants");
+
+    const modifiedConversation = populatedConversation.toJSON({
+      transform(_document, returnValue) {
+        if (returnValue.participants) {
+          returnValue.participants =
+            returnValue.participants[0]._id.toString() ===
+            request.user?._id.toString()
+              ? (returnValue.participants = returnValue.participants[1])
+              : (returnValue.participants = returnValue.participants[0]);
+
+          returnValue.participants.imageUrl = `${request.protocol}://${request.headers.host}/${returnValue.participants.imageUrl}`;
+
+          delete returnValue.participants.password;
+          delete returnValue.participants.chatUsers;
+        }
+
+        return returnValue;
+      },
+    });
+
+    response.status(201).json(modifiedConversation);
+  } catch {
+    const error = new CustomError("Internal server error");
+    next(error);
+  }
+};
+
+export const getAllchats = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  try {
+    const chats = await conversationModel
+      .find({
+        $and: [
+          { category: CONVERSATION_CATEGORIES.DIRECT },
+          {
+            participants: { $in: [request.user?._id] },
+          },
+        ],
+      })
+      .populate("participants")
+      .transform((documents) =>
+        documents.map((singleDocument) =>
+          singleDocument.toJSON({
+            transform(_document, returnValue) {
+              if (returnValue.participants) {
+                returnValue.participants =
+                  returnValue.participants[0]._id.toString() ===
+                  request.user?._id.toString()
+                    ? (returnValue.participants = returnValue.participants[1])
+                    : (returnValue.participants = returnValue.participants[0]);
+
+                returnValue.participants.imageUrl = `${request.protocol}://${request.headers.host}/${returnValue.participants.imageUrl}`;
+
+                delete returnValue.participants.password;
+                delete returnValue.participants.chatUsers;
+              }
+
+              return returnValue;
+            },
+          }),
+        ),
+      );
+
+    response.json(chats);
   } catch {
     const error = new CustomError("Internal server error");
     next(error);
