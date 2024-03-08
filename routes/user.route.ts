@@ -12,16 +12,18 @@ router.get(
   userControllers.getUsers,
 );
 
-router.post(
-  "/chats",
-  isAuth,
-  [
-    body("userId", "Invalid user id")
-      .trim()
-      .notEmpty({ ignore_whitespace: true })
-      .isMongoId(),
-  ],
-  userControllers.createChat,
-);
+router
+  .post(
+    "/chats",
+    isAuth,
+    [
+      body("userId", "Invalid user id")
+        .trim()
+        .notEmpty({ ignore_whitespace: true })
+        .isMongoId(),
+    ],
+    userControllers.createChat,
+  )
+  .get("/chats", isAuth, userControllers.getAllchats);
 
 export default router;
