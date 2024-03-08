@@ -5,6 +5,7 @@ export interface IUserModel extends Document {
   email: string;
   username: string;
   imageUrl: string;
+  chatUsers: string[];
   password: string;
   createdAt: Date;
   updatedAt: Date;
@@ -16,6 +17,10 @@ const userSchema = new Schema(
     email: { type: String, required: true, unique: true },
     username: { type: String, required: true, unique: true },
     imageUrl: { type: String, required: true },
+    chatUsers: {
+      type: [Schema.Types.ObjectId],
+      ref: "User",
+    },
     password: { type: String, required: true },
     createdAt: {
       type: Date,
