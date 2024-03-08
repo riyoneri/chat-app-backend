@@ -42,6 +42,7 @@ export const postRegister = async (
     const transformedUser = savedUser.toJSON({
       transform(_document, returnValue) {
         delete returnValue.password;
+        delete returnValue.chatUsers;
         return {
           ...returnValue,
           imageUrl: `${request.protocol}://${request.headers.host}/${returnValue.imageUrl}`,
@@ -111,6 +112,7 @@ export const postLogin = async (
       transform(document, returnValue) {
         delete returnValue.password;
         delete returnValue._id;
+        delete returnValue.chatUsers;
 
         return {
           _id: document._id,
