@@ -5,6 +5,7 @@ import conversationModel, {
 } from "../models/conversation.model";
 import userModel from "../models/user.model";
 import CustomError from "../util/custom-error";
+import messageModel from "../models/message.model";
 
 const USERS_PER_PAGE = 3;
 
@@ -190,6 +191,44 @@ export const getAllchats = async (
       );
 
     response.json(chats);
+  } catch {
+    const error = new CustomError("Internal server error");
+    next(error);
+  }
+};
+
+export const getChatMessages = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  try {
+    const errors = validationResult(request);
+
+    if (!errors.isEmpty()) {
+      const error = new CustomError("Invalid chat id", 400);
+
+      return next(error);
+    }
+
+    const conversation = await conversationModel.findOne({
+      _id: request.params.chatId,
+    });
+
+    if (
+      !conversation ||
+      !conversation.participants.includes(request.user?._id)
+    ) {
+      const error = new CustomError("Chat not found", 404);
+
+      return next(error);
+    }
+
+    const messages = await messageModel.find({
+      conversationId: conversation._id,
+    });
+
+    response.json(messages);
   } catch {
     const error = new CustomError("Internal server error");
     next(error);
