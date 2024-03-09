@@ -1,7 +1,7 @@
 import express from "express";
+import { body, param, query } from "express-validator";
 import * as userControllers from "../controllers/user.controller";
 import { isAuth } from "../middlewares/is-auth";
-import { body, query } from "express-validator";
 
 const router = express.Router();
 
@@ -24,6 +24,18 @@ router
     ],
     userControllers.createChat,
   )
-  .get("/chats", isAuth, userControllers.getAllchats);
+  .get("/chats", isAuth, userControllers.getAllchats)
+  .get(
+    "/chats/:chatId",
+    isAuth,
+    [
+      param("chatId")
+        .trim()
+        .notEmpty({ ignore_whitespace: true })
+        .bail()
+        .isMongoId(),
+    ],
+    userControllers.getChatMessages,
+  );
 
 export default router;
