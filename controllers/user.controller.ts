@@ -295,6 +295,14 @@ export const postCreateMessage = async (
 
     const savedMessage = await messageData.save();
 
+    conversation.lastMessage = {
+      text: request.body.messageText,
+      sender: request.user?._id,
+      sendTime: new Date(),
+    };
+
+    await conversation.save();
+
     response.json(savedMessage);
   } catch {
     const error = new CustomError("Internal server error");
