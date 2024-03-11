@@ -3,9 +3,9 @@ import { validationResult } from "express-validator";
 import conversationModel, {
   CONVERSATION_CATEGORIES,
 } from "../models/conversation.model";
+import messageModel from "../models/message.model";
 import userModel from "../models/user.model";
 import CustomError from "../util/custom-error";
-import messageModel from "../models/message.model";
 
 const USERS_PER_PAGE = 3;
 
@@ -215,13 +215,11 @@ export const getChatMessages = async (
       $and: [
         { _id: request.params.chatId },
         { category: CONVERSATION_CATEGORIES.DIRECT },
+        { participants: { $in: [request.user?._id] } },
       ],
     });
 
-    if (
-      !conversation ||
-      !conversation.participants.includes(request.user?._id)
-    ) {
+    if (!conversation) {
       const error = new CustomError("Chat not found", 404);
 
       return next(error);
@@ -229,15 +227,15 @@ export const getChatMessages = async (
 
     let extendedConversation = await conversation.populate(
       "participants",
-      "name imageUrl",
+      "name imageUrl username",
     );
 
     const messages = await messageModel.find({
-      conversationId: conversation._id,
+      conversationId: conversation.id,
     });
 
     extendedConversation = extendedConversation.toJSON({
-      transform(document, returnValue) {
+      transform(_document, returnValue) {
         if (returnValue.participants) {
           returnValue.participants =
             returnValue.participants[0]._id.toString() ===
@@ -254,7 +252,50 @@ export const getChatMessages = async (
       },
     });
 
-    response.json(extendedConversation);
+    response.status(200).json(extendedConversation);
+  } catch {
+    const error = new CustomError("Internal server error");
+    next(error);
+  }
+};
+
+export const postCreateMessage = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  try {
+    const errors = validationResult(request);
+
+    if (!errors.isEmpty()) {
+      const error = new CustomError("Invalid chat id", 400);
+
+      return next(error);
+    }
+
+    const conversation = await conversationModel.findOne({
+      $and: [
+        { _id: request.params.chatId },
+        { category: CONVERSATION_CATEGORIES.DIRECT },
+        { participants: { $in: [request.user?._id] } },
+      ],
+    });
+
+    if (!conversation) {
+      const error = new CustomError("Chat not found", 404);
+
+      return next(error);
+    }
+
+    const messageData = new messageModel({
+      conversationId: conversation._id,
+      senderId: request.user?._id,
+      content: request.body.messageText,
+    });
+
+    const savedMessage = await messageData.save();
+
+    response.json(savedMessage);
   } catch {
     const error = new CustomError("Internal server error");
     next(error);
