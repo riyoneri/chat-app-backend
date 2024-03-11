@@ -36,6 +36,19 @@ router
         .isMongoId(),
     ],
     userControllers.getChatMessages,
+  )
+  .post(
+    "/chats/:chatId",
+    isAuth,
+    [
+      param("chatId")
+        .trim()
+        .notEmpty({ ignore_whitespace: true })
+        .bail()
+        .isMongoId(),
+      body("messageText").trim().notEmpty({ ignore_whitespace: true }),
+    ],
+    userControllers.postCreateMessage,
   );
 
 export default router;
