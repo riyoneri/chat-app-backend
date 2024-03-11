@@ -212,7 +212,10 @@ export const getChatMessages = async (
     }
 
     const conversation = await conversationModel.findOne({
-      _id: request.params.chatId,
+      $and: [
+        { _id: request.params.chatId },
+        { category: CONVERSATION_CATEGORIES.DIRECT },
+      ],
     });
 
     if (
@@ -224,11 +227,34 @@ export const getChatMessages = async (
       return next(error);
     }
 
+    let extendedConversation = await conversation.populate(
+      "participants",
+      "name imageUrl",
+    );
+
     const messages = await messageModel.find({
       conversationId: conversation._id,
     });
 
-    response.json(messages);
+    extendedConversation = extendedConversation.toJSON({
+      transform(document, returnValue) {
+        if (returnValue.participants) {
+          returnValue.participants =
+            returnValue.participants[0]._id.toString() ===
+            request.user?._id.toString()
+              ? (returnValue.participants = returnValue.participants[1])
+              : (returnValue.participants = returnValue.participants[0]);
+
+          returnValue.messages = messages;
+
+          returnValue.participants.imageUrl = `${request.protocol}://${request.headers.host}/${returnValue.participants.imageUrl}`;
+        }
+
+        return returnValue;
+      },
+    });
+
+    response.json(extendedConversation);
   } catch {
     const error = new CustomError("Internal server error");
     next(error);
