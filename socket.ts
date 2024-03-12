@@ -10,7 +10,7 @@ export const socketDatabase: { users: { userId: string; socketId: string }[] } =
     users: [],
   };
 
-export const config = {
+export const ioConfig = {
   initializeIO: (httpServer: import("http").Server) => {
     io = new Server(httpServer, {
       cors: {
@@ -66,5 +66,11 @@ export const saveSocketClient = ({
 export const removeSocketClient = (socketId: string) => {
   socketDatabase.users = socketDatabase.users.filter(
     (user) => user.socketId !== socketId,
+  );
+};
+
+export const findClient = (userId: string) => {
+  return (
+    socketDatabase.users.find((user) => user.userId === userId)?.socketId ?? ""
   );
 };
