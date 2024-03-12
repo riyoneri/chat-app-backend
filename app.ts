@@ -14,6 +14,7 @@ import {
   removeSocketClient,
   saveSocketClient,
   socketDatabase,
+  findClientSocket,
 } from "./socket";
 import CustomError from "./util/custom-error";
 config();
@@ -73,6 +74,26 @@ if (MONGODB_URL)
             );
           }
         });
+
+        socket.on(
+          "typing-status",
+          ({
+            senderId,
+            receiverId,
+          }: {
+            senderId: string;
+            receiverId: string;
+          }) => {
+            if (!isValidObjectId(senderId) || !isValidObjectId(receiverId))
+              return;
+            const clientSocket = findClientSocket(receiverId);
+            if (!clientSocket) return;
+
+            io.to(clientSocket).emit("typing-status", {
+              senderId,
+            });
+          },
+        );
 
         socket.on("reconnect", ({ userId }) => {
           if (isValidObjectId(userId)) {
