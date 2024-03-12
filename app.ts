@@ -9,7 +9,12 @@ import { join } from "node:path";
 import { exit } from "node:process";
 import userAuthRoute from "./routes/user-auth.route";
 import userRoute from "./routes/user.route";
-import { ioConfig, removeSocketClient, saveSocketClient } from "./socket";
+import {
+  ioConfig,
+  removeSocketClient,
+  saveSocketClient,
+  socketDatabase,
+} from "./socket";
 import CustomError from "./util/custom-error";
 config();
 
@@ -60,13 +65,29 @@ if (MONGODB_URL)
         socket.on("initialize", ({ userId }) => {
           if (isValidObjectId(userId)) {
             saveSocketClient({ userId, socketId: socket.id });
+            socket.broadcast.emit("status", { type: "active", userId });
+
+            socket.emit(
+              "actives",
+              socketDatabase.users.map((user) => user.userId),
+            );
           }
         });
 
         socket.on("reconnect", ({ userId }) => {
           if (isValidObjectId(userId)) {
             saveSocketClient({ userId, socketId: socket.id });
+            socket.broadcast.emit("status", { type: "active", userId });
+
+            socket.emit(
+              "actives",
+              socketDatabase.users.map((user) => user.userId),
+            );
           }
+        });
+
+        socket.on("logout", ({ userId }) => {
+          socket.broadcast.emit("status", { type: "inactive", userId });
         });
 
         socket.on("disconnect", () => removeSocketClient(socket.id));
