@@ -2,12 +2,18 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import { config } from "dotenv";
 import express, { Express, NextFunction, Request, Response } from "express";
-import { connect } from "mongoose";
+import { verify } from "jsonwebtoken";
+import { connect, isValidObjectId } from "mongoose";
 import morgan from "morgan";
 import { join } from "node:path";
 import { exit } from "node:process";
 import userAuthRoute from "./routes/user-auth.route";
 import userRoute from "./routes/user.route";
+import {
+  config as ioConfig,
+  removeSocketClient,
+  saveSocketClient,
+} from "./socket";
 import CustomError from "./util/custom-error";
 config();
 
@@ -39,6 +45,36 @@ app.use(
 
 if (MONGODB_URL)
   connect(MONGODB_URL)
-    .then(() => app.listen(5000, () => console.log("[server]: 5000")))
+    .then(() => {
+      const server = app.listen(5000, () => console.log("[server]: 5000"));
+      const io = ioConfig.initializeIO(server);
+      io.use((socket, next) => {
+        try {
+          const token = socket.handshake.auth.token;
+          verify(token, process.env.SECRET_KEY!);
+          next();
+        } catch {
+          next(new Error("Not Authenticated"));
+        }
+      });
+
+      io.on("connection", (socket) => {
+        ioConfig.initializeSocket(socket);
+
+        socket.on("initialize", ({ userId }) => {
+          if (isValidObjectId(userId)) {
+            saveSocketClient({ userId, socketId: socket.id });
+          }
+        });
+
+        socket.on("reconnect", ({ userId }) => {
+          if (isValidObjectId(userId)) {
+            saveSocketClient({ userId, socketId: socket.id });
+          }
+        });
+
+        socket.on("disconnect", () => removeSocketClient(socket.id));
+      });
+    })
     // eslint-disable-next-line unicorn/prefer-top-level-await
     .catch(() => exit(1));
