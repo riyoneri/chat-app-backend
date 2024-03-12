@@ -90,7 +90,13 @@ if (MONGODB_URL)
           socket.broadcast.emit("status", { type: "inactive", userId });
         });
 
-        socket.on("disconnect", () => removeSocketClient(socket.id));
+        socket.on("disconnect", () => {
+          const removedClient = removeSocketClient(socket.id);
+          socket.broadcast.emit("status", {
+            type: "inactive",
+            userId: removedClient?.userId,
+          });
+        });
       });
     })
     // eslint-disable-next-line unicorn/prefer-top-level-await
