@@ -9,11 +9,7 @@ import { join } from "node:path";
 import { exit } from "node:process";
 import userAuthRoute from "./routes/user-auth.route";
 import userRoute from "./routes/user.route";
-import {
-  config as ioConfig,
-  removeSocketClient,
-  saveSocketClient,
-} from "./socket";
+import { ioConfig, removeSocketClient, saveSocketClient } from "./socket";
 import CustomError from "./util/custom-error";
 config();
 

@@ -5,6 +5,7 @@ import conversationModel, {
 } from "../models/conversation.model";
 import messageModel from "../models/message.model";
 import userModel from "../models/user.model";
+import { findClientSocket, ioConfig } from "../socket";
 import CustomError from "../util/custom-error";
 
 const USERS_PER_PAGE = 3;
@@ -143,6 +144,12 @@ export const createChat = async (
         return returnValue;
       },
     });
+
+    const clientSocket = findClientSocket(newUserChat.id);
+
+    if (clientSocket) {
+      ioConfig.getIO().to(clientSocket).emit("chats", { type: "refetch" });
+    }
 
     response.status(201).json(modifiedConversation);
   } catch {

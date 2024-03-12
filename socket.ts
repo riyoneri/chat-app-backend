@@ -69,7 +69,7 @@ export const removeSocketClient = (socketId: string) => {
   );
 };
 
-export const findClient = (userId: string) => {
+export const findClientSocket = (userId: string) => {
   return (
     socketDatabase.users.find((user) => user.userId === userId)?.socketId ?? ""
   );
