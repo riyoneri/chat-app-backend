@@ -3,9 +3,24 @@ import { DefaultEventsMap } from "socket.io/dist/typed-events";
 let io: Server;
 let socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
 
+import { instrument } from "@socket.io/admin-ui";
+
+export const socketDatabase: { users: { userId: string; socketId: string }[] } =
+  {
+    users: [],
+  };
+
 export const config = {
   initializeIO: (httpServer: import("http").Server) => {
-    io = new Server(httpServer, { cors: { origin: "*" } });
+    io = new Server(httpServer, {
+      cors: {
+        origin: ["https://admin.socket.io", "http://localhost:3000"],
+        credentials: true,
+      },
+    });
+    instrument(io, {
+      auth: false,
+    });
     return io;
   },
   initializeSocket: (
@@ -31,4 +46,25 @@ export const config = {
     }
     return socket;
   },
+};
+
+export const saveSocketClient = ({
+  socketId,
+  userId,
+}: {
+  userId: string;
+  socketId: string;
+}) => {
+  const existingUser = socketDatabase.users.find(
+    (user) => user.userId === userId,
+  );
+
+  if (existingUser) existingUser.socketId = socketId;
+  else socketDatabase.users.push({ userId, socketId });
+};
+
+export const removeSocketClient = (socketId: string) => {
+  socketDatabase.users = socketDatabase.users.filter(
+    (user) => user.socketId !== socketId,
+  );
 };
