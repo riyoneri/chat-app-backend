@@ -64,9 +64,15 @@ export const saveSocketClient = ({
 };
 
 export const removeSocketClient = (socketId: string) => {
+  const removedClient = socketDatabase.users.find(
+    (user) => user.socketId === socketId,
+  );
+
   socketDatabase.users = socketDatabase.users.filter(
     (user) => user.socketId !== socketId,
   );
+
+  return removedClient;
 };
 
 export const findClientSocket = (userId: string) => {
