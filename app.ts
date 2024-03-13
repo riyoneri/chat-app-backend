@@ -53,7 +53,7 @@ app.use(
 if (MONGODB_URL)
   connect(MONGODB_URL)
     .then(() => {
-      const server = app.listen(5000, () => console.log("[server]: 5000"));
+      const server = app.listen(3000, () => console.log("[server]: 5000"));
       const io = ioConfig.initializeIO(server);
       io.use((socket, next) => {
         try {
