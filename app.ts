@@ -9,6 +9,7 @@ import { connect, isValidObjectId } from "mongoose";
 import morgan from "morgan";
 import { join } from "node:path";
 import { exit } from "node:process";
+import rateLimit from "express-rate-limit";
 import {
   findClientSocket,
   ioConfig,
@@ -30,9 +31,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(join(process.cwd(), "public")));
 app.use(cors());
-app.use(morgan("dev"));
+process.env.NODE_ENV == "development" && app.use(morgan("dev"));
 app.use(helmet());
 app.use(compression());
+app.use(rateLimit({ windowMs: 1 * 60 * 1000, limit: 20 }));
 
 app.use("/auth", userAuthRoute);
 app.use(userRoute);
