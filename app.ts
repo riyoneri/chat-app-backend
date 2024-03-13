@@ -9,7 +9,6 @@ import { connect, isValidObjectId } from "mongoose";
 import morgan from "morgan";
 import { join } from "node:path";
 import { exit } from "node:process";
-import rateLimit from "express-rate-limit";
 import {
   findClientSocket,
   ioConfig,
@@ -34,7 +33,6 @@ app.use(cors());
 process.env.NODE_ENV == "development" && app.use(morgan("dev"));
 app.use(helmet());
 app.use(compression());
-app.use(rateLimit({ windowMs: 1 * 60 * 1000, limit: 20 }));
 
 app.use("/auth", userAuthRoute);
 app.use(userRoute);
@@ -75,7 +73,7 @@ if (MONGODB_URL)
             saveSocketClient({ userId, socketId: socket.id });
             socket.broadcast.emit("status", { type: "active", userId });
 
-            socket.emit(
+            io.to(socket.id).emit(
               "actives",
               socketDatabase.users.map((user) => user.userId),
             );
