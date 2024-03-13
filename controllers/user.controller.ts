@@ -7,6 +7,7 @@ import messageModel from "../models/message.model";
 import userModel from "../models/user.model";
 import { findClientSocket, ioConfig } from "../socket";
 import CustomError from "../util/custom-error";
+import { getRandomNewText } from "../util/new-messages";
 
 const USERS_PER_PAGE = 3;
 
@@ -116,7 +117,7 @@ export const createChat = async (
       category: CONVERSATION_CATEGORIES.DIRECT,
       participants: [request.user, newUserChat._id],
       lastMessage: {
-        text: "Just landed...",
+        text: getRandomNewText(),
         sender: newUserChat._id,
       },
     });
@@ -309,6 +310,19 @@ export const postCreateMessage = async (
     };
 
     await conversation.save();
+
+    const clientSocket = findClientSocket(
+      conversation.participants[0].toString() === request.user?.id
+        ? conversation.participants[1].toString()
+        : conversation.participants[0].toString(),
+    );
+
+    if (clientSocket) {
+      ioConfig
+        .getIO()
+        .to(clientSocket)
+        .emit("message", { newMessage: savedMessage, chatId: conversation.id });
+    }
 
     response.json(savedMessage);
   } catch {
