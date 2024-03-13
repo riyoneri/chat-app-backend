@@ -7,17 +7,19 @@ import { connect, isValidObjectId } from "mongoose";
 import morgan from "morgan";
 import { join } from "node:path";
 import { exit } from "node:process";
-import userAuthRoute from "./routes/user-auth.route";
-import userRoute from "./routes/user.route";
+import helmet from "helmet";
 import {
+  findClientSocket,
   ioConfig,
   removeSocketClient,
   saveSocketClient,
   socketDatabase,
-  findClientSocket,
 } from "./socket";
 import CustomError from "./util/custom-error";
 config();
+
+import userAuthRoute from "./routes/user-auth.route";
+import userRoute from "./routes/user.route";
 
 const MONGODB_URL = process.env.MONGODB_URL;
 
@@ -28,6 +30,7 @@ app.use(bodyParser.json());
 app.use(express.static(join(process.cwd(), "public")));
 app.use(cors());
 app.use(morgan("dev"));
+app.use(helmet());
 
 app.use("/auth", userAuthRoute);
 app.use(userRoute);
