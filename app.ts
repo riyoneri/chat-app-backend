@@ -1,13 +1,14 @@
 import bodyParser from "body-parser";
+import compression from "compression";
 import cors from "cors";
 import { config } from "dotenv";
 import express, { Express, NextFunction, Request, Response } from "express";
+import helmet from "helmet";
 import { verify } from "jsonwebtoken";
 import { connect, isValidObjectId } from "mongoose";
 import morgan from "morgan";
 import { join } from "node:path";
 import { exit } from "node:process";
-import helmet from "helmet";
 import {
   findClientSocket,
   ioConfig,
@@ -31,6 +32,7 @@ app.use(express.static(join(process.cwd(), "public")));
 app.use(cors());
 app.use(morgan("dev"));
 app.use(helmet());
+app.use(compression());
 
 app.use("/auth", userAuthRoute);
 app.use(userRoute);
