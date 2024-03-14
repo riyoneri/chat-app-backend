@@ -37,7 +37,7 @@ export const getUsers = async (
               delete returnValue.password;
               return {
                 ...returnValue,
-                imageUrl: `${request.protocol}://${request.headers.host}/${returnValue.imageUrl}`,
+                imageUrl: `${process.env.NODE_ENV === "production" ? "https" : request.protocol}://${request.headers.host}/${returnValue.imageUrl}`,
               };
             },
           }),
@@ -92,7 +92,7 @@ export const createChat = async (
                     ? (returnValue.participants = returnValue.participants[1])
                     : (returnValue.participants = returnValue.participants[0]);
 
-                returnValue.participants.imageUrl = `${request.protocol}://${request.headers.host}/${returnValue.participants.imageUrl}`;
+                returnValue.participants.imageUrl = `${process.env.NODE_ENV === "production" ? "https" : request.protocol}://${request.headers.host}/${returnValue.participants.imageUrl}`;
 
                 delete returnValue.participants.password;
               }
@@ -136,7 +136,7 @@ export const createChat = async (
               ? (returnValue.participants = returnValue.participants[1])
               : (returnValue.participants = returnValue.participants[0]);
 
-          returnValue.participants.imageUrl = `${request.protocol}://${request.headers.host}/${returnValue.participants.imageUrl}`;
+          returnValue.participants.imageUrl = `${process.env.NODE_ENV === "production" ? "https" : request.protocol}://${request.headers.host}/${returnValue.participants.imageUrl}`;
 
           delete returnValue.participants.password;
           delete returnValue.participants.chatUsers;
@@ -186,7 +186,7 @@ export const getAllchats = async (
                     ? (returnValue.participants = returnValue.participants[1])
                     : (returnValue.participants = returnValue.participants[0]);
 
-                returnValue.participants.imageUrl = `${request.protocol}://${request.headers.host}/${returnValue.participants.imageUrl}`;
+                returnValue.participants.imageUrl = `${process.env.NODE_ENV === "production" ? "https" : request.protocol}://${request.headers.host}/${returnValue.participants.imageUrl}`;
 
                 delete returnValue.participants.password;
                 delete returnValue.participants.chatUsers;
@@ -253,7 +253,7 @@ export const getChatMessages = async (
 
           returnValue.messages = messages;
 
-          returnValue.participants.imageUrl = `${request.protocol}://${request.headers.host}/${returnValue.participants.imageUrl}`;
+          returnValue.participants.imageUrl = `${process.env.NODE_ENV === "production" ? "https" : request.protocol}://${request.headers.host}/${returnValue.participants.imageUrl}`;
         }
 
         return returnValue;

@@ -44,7 +44,7 @@ const requestBusboy = (
         return;
       }
 
-      const storageName = `question_${getFileId()}${extname(filename)}`;
+      const storageName = `user_${getFileId()}${extname(filename)}`;
 
       const saveTo = join(imageStoragePath, storageName);
 

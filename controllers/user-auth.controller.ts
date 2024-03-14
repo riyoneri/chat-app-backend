@@ -117,7 +117,7 @@ export const postLogin = async (
         return {
           _id: document._id,
           ...returnValue,
-          imageUrl: `${request.protocol}://${request.headers.host}/${returnValue.imageUrl}`,
+          imageUrl: `${process.env.NODE_ENV === "production" ? "https" : request.protocol}://${request.headers.host}/${returnValue.imageUrl}`,
         };
       },
     });
