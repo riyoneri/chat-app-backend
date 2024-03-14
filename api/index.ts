@@ -15,12 +15,12 @@ import {
   removeSocketClient,
   saveSocketClient,
   socketDatabase,
-} from "./socket";
-import CustomError from "./util/custom-error";
+} from "../socket";
+import CustomError from "../util/custom-error";
 config();
 
-import userAuthRoute from "./routes/user-auth.route";
-import userRoute from "./routes/user.route";
+import userAuthRoute from "../routes/user-auth.route";
+import userRoute from "../routes/user.route";
 
 const MONGODB_URL =
   process.env.NODE_ENV === "development"
