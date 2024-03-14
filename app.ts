@@ -27,8 +27,6 @@ const MONGODB_URL =
     ? process.env.MONGODB_URL_LOCAL
     : process.env.MONGODB_URL;
 
-console.log(MONGODB_URL);
-
 const app: Express = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
