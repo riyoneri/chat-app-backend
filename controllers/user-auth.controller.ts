@@ -1,11 +1,11 @@
-import { hashSync, compareSync } from "bcryptjs";
+import { compareSync, hashSync } from "bcryptjs";
 import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
+import { sign } from "jsonwebtoken";
 import userModel from "../models/user.model";
 import CustomError from "../util/custom-error";
-import { deletefile } from "../util/file-system";
+import { sendImgurRequest } from "../util/imgur-request";
 import { serializeValidation } from "../util/validation";
-import { sign } from "jsonwebtoken";
 
 export const postRegister = async (
   request: Request,
@@ -22,10 +22,10 @@ export const postRegister = async (
         serializeValidation(errors),
       );
 
-      request.body.image && deletefile(request.body.image);
-
       return next(error);
     }
+
+    const { link } = await sendImgurRequest(request.body.image);
 
     const hashedPassword = hashSync(request.body.password, 12);
 
@@ -33,7 +33,7 @@ export const postRegister = async (
       name: request.body.name,
       email: request.body.email,
       username: request.body.username,
-      imageUrl: request.body.image.split(/public\W+/)[1],
+      imageUrl: link,
       password: hashedPassword,
     });
 
@@ -45,7 +45,6 @@ export const postRegister = async (
         delete returnValue.chatUsers;
         return {
           ...returnValue,
-          imageUrl: `${request.protocol}://${request.headers.host}/${returnValue.imageUrl}`,
         };
       },
     });
@@ -53,7 +52,6 @@ export const postRegister = async (
     response.status(201).json(transformedUser);
   } catch {
     const error = new CustomError("Internal server error");
-    request.body.image && deletefile(request.body.image);
     next(error);
   }
 };
@@ -117,7 +115,6 @@ export const postLogin = async (
         return {
           _id: document._id,
           ...returnValue,
-          imageUrl: `${process.env.NODE_ENV === "production" ? "https" : request.protocol}://${request.headers.host}/${returnValue.imageUrl}`,
         };
       },
     });
