@@ -37,7 +37,6 @@ export const getUsers = async (
               delete returnValue.password;
               return {
                 ...returnValue,
-                imageUrl: `${process.env.NODE_ENV === "production" ? "https" : request.protocol}://${request.headers.host}/${returnValue.imageUrl}`,
               };
             },
           }),
@@ -92,8 +91,6 @@ export const createChat = async (
                     ? (returnValue.participants = returnValue.participants[1])
                     : (returnValue.participants = returnValue.participants[0]);
 
-                returnValue.participants.imageUrl = `${process.env.NODE_ENV === "production" ? "https" : request.protocol}://${request.headers.host}/${returnValue.participants.imageUrl}`;
-
                 delete returnValue.participants.password;
               }
 
@@ -135,8 +132,6 @@ export const createChat = async (
             request.user?._id.toString()
               ? (returnValue.participants = returnValue.participants[1])
               : (returnValue.participants = returnValue.participants[0]);
-
-          returnValue.participants.imageUrl = `${process.env.NODE_ENV === "production" ? "https" : request.protocol}://${request.headers.host}/${returnValue.participants.imageUrl}`;
 
           delete returnValue.participants.password;
           delete returnValue.participants.chatUsers;
@@ -185,8 +180,6 @@ export const getAllchats = async (
                   request.user?._id.toString()
                     ? (returnValue.participants = returnValue.participants[1])
                     : (returnValue.participants = returnValue.participants[0]);
-
-                returnValue.participants.imageUrl = `${process.env.NODE_ENV === "production" ? "https" : request.protocol}://${request.headers.host}/${returnValue.participants.imageUrl}`;
 
                 delete returnValue.participants.password;
                 delete returnValue.participants.chatUsers;
@@ -252,8 +245,6 @@ export const getChatMessages = async (
               : (returnValue.participants = returnValue.participants[0]);
 
           returnValue.messages = messages;
-
-          returnValue.participants.imageUrl = `${process.env.NODE_ENV === "production" ? "https" : request.protocol}://${request.headers.host}/${returnValue.participants.imageUrl}`;
         }
 
         return returnValue;
