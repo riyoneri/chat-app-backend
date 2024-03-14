@@ -1,13 +1,11 @@
 import Busboy from "busboy";
 import express, { NextFunction, Request, Response } from "express";
 import { body } from "express-validator";
-import { createWriteStream } from "node:fs";
-import { extname, join } from "node:path";
+import { join } from "node:path";
 import * as userAuthcontroller from "../controllers/user-auth.controller";
-import { ensureDirectory } from "../util/file-system";
-import { getFileId } from "../util/generate-id";
 import User from "../models/user.model";
 import CustomError from "../util/custom-error";
+import { ensureDirectory } from "../util/file-system";
 
 const router = express.Router();
 
@@ -31,11 +29,13 @@ const requestBusboy = (
   request.body.fileErrors = {};
 
   busboy
-    .on("file", (name, file, { filename, mimeType }) => {
+    .on("file", (name, file, { mimeType }) => {
       if (name !== "image") {
         file.resume();
         return;
       }
+
+      request.body.image = process.cwd();
 
       if (!["image/jpeg", "image/png", "image/jpg"].includes(mimeType)) {
         request.body.fileErrors[name] = "The file must be an image";
@@ -44,23 +44,17 @@ const requestBusboy = (
         return;
       }
 
-      const storageName = `user_${getFileId()}${extname(filename)}`;
+      const buffers: Uint8Array[] = [];
 
-      const saveTo = join(imageStoragePath, storageName);
+      file
+        .on("data", (data) => buffers.push(data))
+        .on("end", () => (request.body.image = Buffer.concat(buffers)))
+        .on("limit", () => {
+          request.body.fileErrors[name] =
+            "File is too large. Maximum size is 2MBS";
 
-      const writeStream = file.pipe(createWriteStream(saveTo));
-
-      request.body.image = saveTo;
-
-      file.on("limit", () => {
-        file.unpipe(writeStream);
-        writeStream.end();
-
-        request.body.fileErrors[name] =
-          "File is too large. Maximum size is 2MBS";
-
-        file.resume();
-      });
+          file.resume();
+        });
     })
     .on("filesLimit", () => {
       request.body.fileErrors["image"] = "Too many files. Maximum is 1";
