@@ -9,7 +9,7 @@ import { findClientSocket, ioConfig } from "../socket";
 import CustomError from "../util/custom-error";
 import { getRandomNewText } from "../util/new-messages";
 
-const USERS_PER_PAGE = 3;
+const USERS_PER_PAGE = 7;
 
 export const getUsers = async (
   request: Request,
