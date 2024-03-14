@@ -131,4 +131,4 @@ if (MONGODB_URL)
     // eslint-disable-next-line unicorn/prefer-top-level-await
     .catch(() => exit(1));
 
-export { app };
+export default app;
