@@ -1,19 +1,10 @@
 const newChatsTexts = [
-  "Hello!",
-  "Welcome!",
-  "Greetings!",
-  "Hey there!",
-  "Hi!",
-  "Excited!",
-  "Ready!",
-  "Let's chat!",
-  "Chat away!",
-  "Journey begins!",
-  "Adventure time!",
-  "Chat time!",
+  "Just landed!",
   "New chat!",
-  "Let's talk!",
   "Chat journey!",
+  "Ready to chat!",
+  "Chat unlocked",
+  "Let the chat begin!",
 ];
 
 export const getRandomNewText = () => {
