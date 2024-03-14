@@ -1,11 +1,9 @@
 import Busboy from "busboy";
 import express, { NextFunction, Request, Response } from "express";
 import { body } from "express-validator";
-import { join } from "node:path";
 import * as userAuthcontroller from "../controllers/user-auth.controller";
 import User from "../models/user.model";
 import CustomError from "../util/custom-error";
-import { ensureDirectory } from "../util/file-system";
 
 const router = express.Router();
 
@@ -24,8 +22,6 @@ const requestBusboy = (
     limits: { fileSize: 1024 * 1024 * 2, files: 1 },
   });
 
-  const imageStoragePath = join(process.cwd(), "public", "uploads", "users");
-  ensureDirectory(imageStoragePath);
   request.body.fileErrors = {};
 
   busboy
