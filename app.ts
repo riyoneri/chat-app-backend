@@ -22,7 +22,12 @@ config();
 import userAuthRoute from "./routes/user-auth.route";
 import userRoute from "./routes/user.route";
 
-const MONGODB_URL = process.env.MONGODB_URL;
+const MONGODB_URL =
+  process.env.NODE_ENV === "development"
+    ? process.env.MONGODB_URL_LOCAL
+    : process.env.MONGODB_URL;
+
+console.log(MONGODB_URL);
 
 const app: Express = express();
 
@@ -53,7 +58,7 @@ app.use(
 if (MONGODB_URL)
   connect(MONGODB_URL)
     .then(() => {
-      const server = app.listen(3000, () => console.log("[server]: 5000"));
+      const server = app.listen(5000, () => console.log("[server]: 5000"));
       const io = ioConfig.initializeIO(server);
       io.use((socket, next) => {
         try {

@@ -14,7 +14,7 @@ export const ioConfig = {
   initializeIO: (httpServer: import("http").Server) => {
     io = new Server(httpServer, {
       cors: {
-        origin: ["https://admin.socket.io", "http://localhost:3000"],
+        origin: [process.env.CLIENT_URL!],
         credentials: true,
       },
     });
