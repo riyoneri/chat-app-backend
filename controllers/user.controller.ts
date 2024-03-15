@@ -48,8 +48,6 @@ export const getUsers = async (
         ),
       );
 
-    console.log(totalUsers);
-
     response.json({
       users,
       hasNextPage: USERS_PER_PAGE * currentPage < totalUsers,
