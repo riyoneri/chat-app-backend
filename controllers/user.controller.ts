@@ -18,7 +18,12 @@ export const getUsers = async (
 ) => {
   try {
     const currentPage = Number(request.query.page) || 1;
-    const totalUsers = await userModel.countDocuments();
+    const totalUsers = await userModel.countDocuments({
+      $and: [
+        { _id: { $ne: request.user?._id } },
+        { _id: { $nin: request.user?.chatUsers } },
+      ],
+    });
 
     const users = await userModel
       .find({
@@ -43,9 +48,11 @@ export const getUsers = async (
         ),
       );
 
+    console.log(totalUsers);
+
     response.json({
       users,
-      hasNextPage: USERS_PER_PAGE * currentPage < totalUsers - 1,
+      hasNextPage: USERS_PER_PAGE * currentPage < totalUsers,
     });
   } catch {
     const error = new CustomError("Internal server error");
