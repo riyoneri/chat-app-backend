@@ -4,14 +4,15 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "npx tsc",
-    "start": "npx tsc && node dist/index.js",
-    "dev": "nodemon index.ts"
+    "start": "cross-env NODE_ENV=production node dist/index.js",
+    "dev": "cross-env NODE_ENV=development nodemon index.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "cross-env": "^7.0.3",
     "express": "^4.19.2"
   },
   "devDependencies": {
