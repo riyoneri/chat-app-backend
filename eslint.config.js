@@ -3,12 +3,14 @@
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
+import eslintConfigPrettier from "eslint-config-prettier";
 
 export default [
   ...[
     eslint.configs.recommended,
     ...tseslint.configs.recommended,
     eslintPluginUnicorn.configs["flat/recommended"],
+    eslintConfigPrettier,
   ].map((config) => ({ ...config, ignores: ["dist/**/*"] })),
   {
     ignores: ["dist/**/*"],
