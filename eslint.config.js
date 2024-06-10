@@ -2,12 +2,16 @@
 
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
+import eslintPluginUnicorn from "eslint-plugin-unicorn";
 
-export default tseslint.config(
-  eslint.configs.recommended,
-  ...tseslint.configs.recommended,
+export default [
+  ...[
+    eslint.configs.recommended,
+    ...tseslint.configs.recommended,
+    eslintPluginUnicorn.configs["flat/recommended"],
+  ].map((config) => ({ ...config, ignores: ["dist/**/*"] })),
   {
-    files: ["src/**/*.ts"],
+    ignores: ["dist/**/*"],
     rules: {
       "no-console": "error",
       "@typescript-eslint/no-unused-vars": [
@@ -46,5 +50,5 @@ export default tseslint.config(
       "operator-assignment": ["error", "always"],
       "prefer-arrow-callback": "error",
     },
-  }
-);
+  },
+];
