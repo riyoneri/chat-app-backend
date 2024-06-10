@@ -2,6 +2,7 @@
   "name": "trustee",
   "version": "1.0.0",
   "main": "dist/index.js",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "start": "cross-env NODE_ENV=production node dist/index.js",
@@ -16,10 +17,14 @@
     "express": "^4.19.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.4.0",
+    "@types/eslint__js": "^8.42.3",
     "@types/express": "^4.17.21",
     "@types/node": "^20.14.2",
+    "eslint": "^8.57.0",
     "nodemon": "^3.1.3",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.12.0"
   }
 }
