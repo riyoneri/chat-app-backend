@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import helmet from "helmet";
 import { RateLimiterMemory } from "rate-limiter-flexible";
+import compression from "compression";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -10,6 +11,7 @@ const rateLimiter = new RateLimiterMemory({
   duration: 10,
 });
 
+app.use(compression());
 app.use(helmet());
 app.disable("x-powered-by");
 
