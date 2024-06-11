@@ -15,7 +15,7 @@
   "description": "",
   "lint-staged": {
     "*.{ts,json,css}": [
-      "eslint --quiet --fix",
+      "eslint --fix",
       "prettier --write"
     ]
   },
