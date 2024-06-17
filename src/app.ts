@@ -1,6 +1,7 @@
 import bodyParser from "body-parser";
 import compression from "compression";
 import busboy from "connect-busboy";
+import { config } from "dotenv";
 import express, { NextFunction, Request, Response } from "express";
 import helmet from "helmet";
 import { RateLimiterMemory } from "rate-limiter-flexible";
@@ -8,6 +9,7 @@ import { RateLimiterMemory } from "rate-limiter-flexible";
 import userAuthroute from "./routes/user-auth.route";
 import CustomError from "./utils/custom-error";
 
+config();
 const app = express();
 const port = process.env.PORT || 5000;
 
