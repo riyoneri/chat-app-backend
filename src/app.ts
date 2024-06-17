@@ -1,3 +1,4 @@
+import bodyParser from "body-parser";
 import compression from "compression";
 import busboy from "connect-busboy";
 import express, { NextFunction, Request, Response } from "express";
@@ -18,6 +19,7 @@ const rateLimiter = new RateLimiterMemory({
 app.use(compression());
 app.use(helmet());
 app.disable("x-powered-by");
+app.use(bodyParser.json());
 
 app.use((request: Request, response: Response, next: NextFunction) => {
   rateLimiter
