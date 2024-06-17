@@ -1,11 +1,13 @@
+import compression from "compression";
 import express, { NextFunction, Request, Response } from "express";
 import helmet from "helmet";
 import { RateLimiterMemory } from "rate-limiter-flexible";
-import compression from "compression";
+
+import userAuthroute from "./routes/user-auth.route";
 import CustomError from "./utils/custom-error";
 
 const app = express();
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 5000;
 
 const rateLimiter = new RateLimiterMemory({
   points: 6,
@@ -24,6 +26,8 @@ app.use((request: Request, response: Response, next: NextFunction) => {
     })
     .catch(() => response.status(429).send("Too Many Requests"));
 });
+
+app.use("/auth/", userAuthroute);
 
 app.use((_, response: Response) => {
   response.status(404).send("URL does not exist");
