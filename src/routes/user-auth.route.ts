@@ -35,6 +35,7 @@ router.post(
       .isEmail()
       .withMessage("Email is invalid")
       .toLowerCase()
+      .bail()
       .custom((value) =>
         User.findOne({ email: value }).then((user) => {
           if (user) throw "Email already exists";
@@ -51,6 +52,7 @@ router.post(
       .withMessage("Password must be a string")
       .notEmpty({ ignore_whitespace: true })
       .withMessage("Password is required")
+      .bail()
       .matches(/\d/)
       .matches(/[A-Z]/)
       .matches(/[a-z]/)
