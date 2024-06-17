@@ -1,9 +1,9 @@
 // @ts-check
-
 import eslint from "@eslint/js";
-import tseslint from "typescript-eslint";
-import eslintPluginUnicorn from "eslint-plugin-unicorn";
 import eslintConfigPrettier from "eslint-config-prettier";
+import eslintPluginUnicorn from "eslint-plugin-unicorn";
+import tseslint from "typescript-eslint";
+
 
 export default [
   ...[
@@ -43,7 +43,6 @@ export default [
           allowNamedExports: true,
         },
       ],
-      camelcase: "error",
       "no-else-return": "error",
       "no-lonely-if": "error",
       "no-negated-condition": "error",
