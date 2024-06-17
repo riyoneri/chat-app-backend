@@ -21,21 +21,21 @@ const userSchema = new Schema(
       ref: "User",
     },
     password: { type: String, required: true },
-    createdAt: {
-      type: Date,
-      select: false,
-    },
   },
   {
     versionKey: false,
     timestamps: {
-      createdAt: true,
+      updatedAt: false,
     },
     toJSON: {
       transform: (document, returnValue) => {
         delete returnValue.password;
         delete returnValue._id;
-        return { id: document._id.toString(), ...returnValue };
+        return {
+          id: document._id.toString(),
+          ...returnValue,
+          imageUrl: `${process.env.AWS_DISTRIBUTION_DOMAIN_NAME}/${returnValue.imageUrl}`,
+        };
       },
     },
   },
