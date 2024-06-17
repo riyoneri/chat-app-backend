@@ -7,10 +7,9 @@ export default function busboy(
   _response: Response,
   next: NextFunction,
 ) {
-  request.body = {};
   if (!request.busboy) return next();
 
-  request.body.fileErrors;
+  request.body.fileError;
 
   request.busboy
     .on("file", (name, file, { mimeType }) => {
@@ -22,7 +21,7 @@ export default function busboy(
       request.body.image = "available";
 
       if (!["image/jpeg", "image/png", "image/jpg"].includes(mimeType)) {
-        request.body.fileErrors = "The file must be an image";
+        request.body.fileError = "The file must be an image";
 
         file.resume();
         return;
@@ -31,11 +30,16 @@ export default function busboy(
       const buffers: Uint8Array[] = [];
 
       file
+        .on("limit", () => {
+          request.body.fileError = "File is too large. Maximum size is 2MBS";
+
+          file.resume();
+        })
         .on("data", (chunk) => buffers.push(chunk))
         .on("end", () => (request.body.image = Buffer.concat(buffers)));
     })
     .on("filesLimit", () => {
-      request.body.fileErrors = "Too many files. Maximum is 1";
+      request.body.fileError = "Too many files. Maximum is 1";
     })
     .on("field", (name, value) => {
       request.body[name] = value;

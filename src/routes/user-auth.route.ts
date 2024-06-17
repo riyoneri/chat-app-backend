@@ -44,7 +44,7 @@ router.post(
     body("image", "Image is required")
       .notEmpty({ ignore_whitespace: true })
       .custom((_, { req }) => {
-        if (req.body.fileErrors) throw req.body.fileErrors;
+        if (req.body.fileError) throw req.body.fileError;
         return true;
       }),
     body("password", "Password is not strong")
