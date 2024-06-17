@@ -1,4 +1,5 @@
 import compression from "compression";
+import busboy from "connect-busboy";
 import express, { NextFunction, Request, Response } from "express";
 import helmet from "helmet";
 import { RateLimiterMemory } from "rate-limiter-flexible";
@@ -26,6 +27,8 @@ app.use((request: Request, response: Response, next: NextFunction) => {
     })
     .catch(() => response.status(429).send("Too Many Requests"));
 });
+
+app.use(busboy({ limits: { files: 1 } }));
 
 app.use("/auth/", userAuthroute);
 
