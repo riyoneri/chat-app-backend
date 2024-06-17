@@ -5,7 +5,7 @@ import compression from "compression";
 import CustomError from "./utils/custom-error";
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 
 const rateLimiter = new RateLimiterMemory({
   points: 6,
