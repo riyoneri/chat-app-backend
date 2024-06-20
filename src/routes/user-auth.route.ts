@@ -62,8 +62,13 @@ router.post(
       .isString()
       .withMessage("Confirm-password must be a string")
       .notEmpty({ ignore_whitespace: true })
+      .bail()
       .custom((value, { req }) => value === req.body.password)
       .withMessage("Passwords must match"),
+    body("redirectUrl", "Redirect URL is required")
+      .isString()
+      .withMessage("Redirect URL must be a string")
+      .notEmpty({ ignore_whitespace: true }),
   ],
   userAuthController.register,
 );
