@@ -1,7 +1,8 @@
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
-import { hashSync } from "bcrypt";
+import { compareSync, hashSync } from "bcrypt";
 import { NextFunction, Request, Response } from "express";
+import { sign } from "jsonwebtoken";
 import { nanoid } from "nanoid";
 import sharp from "sharp";
 
@@ -165,6 +166,55 @@ export const verifyEmail = async (
     await user.save();
 
     response.status(200).json({ message: "User email is verified" });
+  } catch {
+    const error = new CustomError("Internal server error.", 500);
+    next(error);
+  }
+};
+
+export const login = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  try {
+    const validationResults = customValidationResult(request);
+    if (validationResults) {
+      const error = new CustomError("Validation error", 400, validationResults);
+
+      return next(error);
+    }
+
+    const user = await User.findOne({
+      $or: [
+        { "email.value": request.body.emailOrUsername },
+        { username: request.body.emailOrUsername },
+      ],
+    });
+
+    if (!user) {
+      const error = new CustomError("Incorrect email or password", 404);
+
+      return next(error);
+    }
+
+    const passwordMatch = compareSync(request.body.password, user.password);
+
+    if (!passwordMatch) {
+      const error = new CustomError("Incorrect email or password", 404);
+
+      return next(error);
+    }
+
+    if (!user.email.verified) {
+      const error = new CustomError("Email is not verified", 403);
+
+      return next(error);
+    }
+
+    const token = sign({ id: user.id }, process.env.JWT_SECRET_KEY!);
+
+    response.status(200).json({ user: user.toJSON(), token });
   } catch {
     const error = new CustomError("Internal server error.", 500);
     next(error);

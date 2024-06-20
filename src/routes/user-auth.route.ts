@@ -99,6 +99,21 @@ router
       .trim()
       .notEmpty({ ignore_whitespace: true }),
     userAuthController.verifyEmail,
+  )
+  .post(
+    "/login",
+    [
+      body("emailOrUsername", "Email must be a string")
+        .isString()
+        .trim()
+        .notEmpty({ ignore_whitespace: true })
+        .toLowerCase(),
+      body("password", "Password must be string")
+        .isString()
+        .trim()
+        .notEmpty({ ignore_whitespace: true }),
+    ],
+    userAuthController.login,
   );
 
 export default router;
