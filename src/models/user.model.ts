@@ -11,6 +11,9 @@ export interface IUserModel extends Document {
   chatUsers: [string, string];
   password: string;
   createdAt: Date;
+  tokens: {
+    emailVerification: string;
+  };
 }
 
 const userSchema = new Schema(

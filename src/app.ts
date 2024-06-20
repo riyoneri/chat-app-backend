@@ -42,7 +42,7 @@ app.use((request: Request, response: Response, next: NextFunction) => {
 
 app.use(busboy({ limits: { files: 1, fileSize: 1024 * 1024 * 4 } }));
 
-app.use("/auth/", userAuthroute);
+app.use("/auth", userAuthroute);
 
 app.use((_, response: Response) => {
   response.status(404).send("URL does not exist");
