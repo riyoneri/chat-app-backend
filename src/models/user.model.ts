@@ -21,12 +21,15 @@ const userSchema = new Schema(
       value: { type: String, required: true },
       verified: { type: Boolean, required: true, default: false },
     },
-    imageUrl: {},
+    imageUrl: { type: String, required: true },
     chatUsers: {
       type: [Schema.Types.ObjectId],
       ref: "User",
     },
     password: { type: String, required: true },
+    tokens: {
+      emailVerification: String,
+    },
   },
   {
     versionKey: false,
@@ -37,6 +40,7 @@ const userSchema = new Schema(
       transform: (document, returnValue) => {
         delete returnValue.password;
         delete returnValue._id;
+        delete returnValue.tokens;
         return {
           id: document._id.toString(),
           ...returnValue,
