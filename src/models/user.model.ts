@@ -3,7 +3,10 @@ import { Schema, model } from "mongoose";
 export interface IUserModel extends Document {
   name: string;
   username: string;
-  email: string;
+  email: {
+    value: string;
+    verified: boolean;
+  };
   imageUrl: string;
   chatUsers: [string, string];
   password: string;
@@ -14,7 +17,10 @@ const userSchema = new Schema(
   {
     name: { type: String, required: true },
     username: { type: String, required: true },
-    email: { type: String, requied: true, unique: true },
+    email: {
+      value: { type: String, required: true },
+      verified: { type: String, required: true, default: false },
+    },
     imageUrl: {},
     chatUsers: {
       type: [Schema.Types.ObjectId],
@@ -34,6 +40,7 @@ const userSchema = new Schema(
         return {
           id: document._id.toString(),
           ...returnValue,
+          email: returnValue.email.value,
           imageUrl: `${process.env.AWS_DISTRIBUTION_DOMAIN_NAME}/${returnValue.imageUrl}`,
         };
       },
