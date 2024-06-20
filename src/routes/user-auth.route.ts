@@ -74,6 +74,24 @@ router
     userAuthController.register,
   )
   .post(
+    "/resend-verification",
+    [
+      body("email", "Email is required")
+        .isString()
+        .withMessage("Email must be a string")
+        .trim()
+        .notEmpty({ ignore_whitespace: true })
+        .isEmail()
+        .withMessage("Email is invalid")
+        .toLowerCase(),
+      body("redirectUrl", "Redirect URL is required")
+        .isString()
+        .withMessage("Redirect URL must be a string")
+        .notEmpty({ ignore_whitespace: true }),
+    ],
+    userAuthController.resendVerificationEmail,
+  )
+  .post(
     "/verify-email",
     body("token", "Token is required")
       .isString()

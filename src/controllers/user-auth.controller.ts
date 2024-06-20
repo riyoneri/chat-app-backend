@@ -88,6 +88,54 @@ export const register = async (
   }
 };
 
+export const resendVerificationEmail = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  try {
+    const validationResults = customValidationResult(request);
+    if (validationResults) {
+      const error = new CustomError("Validation error", 400, validationResults);
+
+      return next(error);
+    }
+
+    const user = await User.findOne({
+      "email.value": request.body.email,
+    });
+
+    if (!user) {
+      const error = new CustomError("User not found", 404);
+
+      return next(error);
+    }
+
+    if (user.email.verified) {
+      const error = new CustomError("Email is already verified", 400);
+
+      return next(error);
+    }
+
+    const emailToken = nanoid();
+
+    user.tokens.emailVerification = emailToken;
+
+    await user.save();
+
+    await sendVerificationEmail(
+      `${request.body.redirectUrl}?token=${emailToken}`,
+      user.name.split(" ")?.[0],
+      user.email.value,
+    );
+
+    response.status(201).json({ message: "Email verification is resent" });
+  } catch {
+    const error = new CustomError("Internal server error.", 500);
+    next(error);
+  }
+};
+
 export const verifyEmail = async (
   request: Request,
   response: Response,
