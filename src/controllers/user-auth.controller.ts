@@ -51,6 +51,10 @@ export const register = async (
 
     const newUser = new User({
       ...request.body,
+      email: {
+        value: request.body.email,
+        verified: false,
+      },
       "email.value": request.body.email,
       password: hashedPassword,
       imageUrl: Key,

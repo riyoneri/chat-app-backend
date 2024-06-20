@@ -19,7 +19,7 @@ const userSchema = new Schema(
     username: { type: String, required: true },
     email: {
       value: { type: String, required: true },
-      verified: { type: String, required: true, default: false },
+      verified: { type: Boolean, required: true, default: false },
     },
     imageUrl: {},
     chatUsers: {
