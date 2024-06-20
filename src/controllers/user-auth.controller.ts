@@ -212,7 +212,9 @@ export const login = async (
       return next(error);
     }
 
-    const token = sign({ id: user.id }, process.env.JWT_SECRET_KEY!);
+    const token = sign({ id: user.id }, process.env.JWT_SECRET_KEY!, {
+      expiresIn: "1h",
+    });
 
     response.status(200).json({ user: user.toJSON(), token });
   } catch {
