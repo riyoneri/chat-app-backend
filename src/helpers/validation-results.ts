@@ -5,20 +5,20 @@ interface TypedError extends FieldValidationError {
   msg: string;
 }
 
-const defaultValidationResults = validationResult.withDefaults({
-  formatter: (error) => {
-    const typedError = error as TypedError;
-
-    return {
-      [typedError.path]: {
-        location: typedError.location,
-        message: typedError.msg,
-      },
-    };
-  },
-});
-
 export default function customValidationResult(request: Request) {
   if (validationResult(request).isEmpty()) return false;
-  return defaultValidationResults(request).array({ onlyFirstError: true });
+
+  return validationResult(request)
+    .array({ onlyFirstError: true })
+    .reduce((previousErrors, currentError) => {
+      const typedValue = currentError as TypedError;
+
+      return {
+        ...previousErrors,
+        [typedValue.path]: {
+          location: typedValue.location,
+          message: typedValue.msg,
+        },
+      };
+    }, {});
 }
