@@ -1,6 +1,7 @@
 import bodyParser from "body-parser";
 import compression from "compression";
 import busboy from "connect-busboy";
+import cors from "cors";
 import { config } from "dotenv";
 import express, { NextFunction, Request, Response } from "express";
 import helmet from "helmet";
@@ -29,6 +30,7 @@ const rateLimiter = new RateLimiterMemory({
 app.use(compression());
 app.use(helmet());
 app.disable("x-powered-by");
+app.use(cors());
 app.use(bodyParser.json());
 
 app.use((request: Request, response: Response, next: NextFunction) => {
@@ -37,7 +39,7 @@ app.use((request: Request, response: Response, next: NextFunction) => {
     .then(() => {
       next();
     })
-    .catch(() => response.status(429).send("Too Many Requests"));
+    .catch(() => response.status(429).json("Too Many Requests"));
 });
 
 app.use(busboy({ limits: { files: 1, fileSize: 1024 * 1024 * 4 } }));
@@ -45,7 +47,7 @@ app.use(busboy({ limits: { files: 1, fileSize: 1024 * 1024 * 4 } }));
 app.use("/auth", userAuthroute);
 
 app.use((_, response: Response) => {
-  response.status(404).send("URL does not exist");
+  response.status(404).json("URL does not exist");
 });
 
 app.use(
