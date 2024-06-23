@@ -193,7 +193,7 @@ export const login = async (
     });
 
     if (!user) {
-      const error = new CustomError("Incorrect email or password", 404);
+      const error = new CustomError("Incorrect email or password", 400);
 
       return next(error);
     }
@@ -201,7 +201,7 @@ export const login = async (
     const passwordMatch = compareSync(request.body.password, user.password);
 
     if (!passwordMatch) {
-      const error = new CustomError("Incorrect email or password", 404);
+      const error = new CustomError("Incorrect email or password", 400);
 
       return next(error);
     }
