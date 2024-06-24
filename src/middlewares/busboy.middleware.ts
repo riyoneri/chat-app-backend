@@ -31,7 +31,7 @@ export default function busboy(
 
       file
         .on("limit", () => {
-          request.body.fileError = "File is too large. Maximum size is 2MBS";
+          request.body.fileError = "File is too large. Maximum size is 1MB";
 
           file.resume();
         })
