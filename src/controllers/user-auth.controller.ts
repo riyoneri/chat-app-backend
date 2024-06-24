@@ -130,7 +130,7 @@ export const resendVerificationEmail = async (
       user.email.value,
     );
 
-    response.status(201).json({ message: "Email verification is resent" });
+    response.status(200).json({ message: "Email verification is resent" });
   } catch {
     const error = new CustomError("Internal server error.", 500);
     next(error);
