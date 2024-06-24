@@ -39,7 +39,7 @@ app.use((request: Request, response: Response, next: NextFunction) => {
     .then(() => {
       next();
     })
-    .catch(() => response.status(429).json("Too Many Requests"));
+    .catch(() => response.status(429).json({ message: "Too many requests" }));
 });
 
 app.use(busboy({ limits: { files: 1, fileSize: 1024 * 1024 * 4 } }));
@@ -47,7 +47,7 @@ app.use(busboy({ limits: { files: 1, fileSize: 1024 * 1024 * 4 } }));
 app.use("/auth", userAuthroute);
 
 app.use((_, response: Response) => {
-  response.status(404).json("URL does not exist");
+  response.status(404).json({ message: "URL does not exist" });
 });
 
 app.use(
