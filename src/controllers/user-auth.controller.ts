@@ -55,7 +55,7 @@ export const register = async (
       ...request.body,
       email: {
         value: request.body.email,
-        verified: false,
+        verified: true,
       },
       "email.value": request.body.email,
       password: hashedPassword,
@@ -65,11 +65,11 @@ export const register = async (
 
     const savedUser = await newUser.save();
 
-    await sendVerificationEmail(
-      `${request.body.redirectUrl}?token=${emailToken}`,
-      savedUser.name.split(" ")?.[0],
-      savedUser.email.value,
-    );
+    // await sendVerificationEmail(
+    //   `${request.body.redirectUrl}?token=${emailToken}`,
+    //   savedUser.name.split(" ")?.[0],
+    //   savedUser.email.value,
+    // );
 
     response.status(201).json(savedUser.toJSON());
   } catch {
@@ -206,11 +206,11 @@ export const login = async (
       return next(error);
     }
 
-    if (!user.email.verified) {
-      const error = new CustomError("Email is not verified", 403);
+    // if (!user.email.verified) {
+    //   const error = new CustomError("Email is not verified", 403);
 
-      return next(error);
-    }
+    //   return next(error);
+    // }
 
     const token = sign({ id: user.id }, process.env.JWT_SECRET_KEY!, {
       expiresIn: "1h",
