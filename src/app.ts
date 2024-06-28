@@ -10,7 +10,11 @@ import { exit } from "node:process";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 
 import userAuthroute from "./routes/user-auth.route";
-import { addClient, config as socketConfig } from "./socket";
+import {
+  addSocketClient,
+  removeSocketClient,
+  config as socketConfig,
+} from "./socket";
 import CustomError from "./utils/custom-error";
 
 config();
@@ -78,7 +82,11 @@ if (MONGODB_URL)
 
       io.on("connection", (socket) => {
         socketConfig.initializeSocket(socket);
-        addClient(socket.handshake.auth.userId, socket.id);
+        addSocketClient(socket.handshake.auth.userId, socket.id);
+
+        socket.on("disconnect", () =>
+          removeSocketClient(socket.handshake.auth.userId),
+        );
       });
     })
     // eslint-disable-next-line unicorn/prefer-top-level-await
