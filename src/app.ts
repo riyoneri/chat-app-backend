@@ -10,6 +10,7 @@ import { exit } from "node:process";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 
 import userAuthroute from "./routes/user-auth.route";
+import { addClient, config as socketConfig } from "./socket";
 import CustomError from "./utils/custom-error";
 
 config();
@@ -61,8 +62,24 @@ app.use(
 if (MONGODB_URL)
   connect(MONGODB_URL)
     .then(() => {
-      // eslint-disable-next-line no-console
-      app.listen(port, () => console.log(`Server: http://localhost:${port}`));
+      const server = app.listen(port, () =>
+        // eslint-disable-next-line no-console
+        console.log(`Server: http://localhost:${port}`),
+      );
+      const io = socketConfig.initializeIO(server);
+      io.use((socket, next) => {
+        try {
+          const _token = socket.handshake.auth.token;
+          next();
+        } catch {
+          next(new Error("Not Authenticated"));
+        }
+      });
+
+      io.on("connection", (socket) => {
+        socketConfig.initializeSocket(socket);
+        addClient(socket.handshake.auth.userId, socket.id);
+      });
     })
     // eslint-disable-next-line unicorn/prefer-top-level-await
     .catch(() => exit(1));
