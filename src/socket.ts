@@ -32,7 +32,7 @@ export const config = {
   },
 };
 
-export const addClient = (userId: string, socketId: string) => {
+export const addSocketClient = (userId: string, socketId: string) => {
   const existingUser = clients.find((user) => user.userId === userId);
 
   if (existingUser) existingUser.socketId = socketId;
