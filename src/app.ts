@@ -5,7 +5,8 @@ import cors from "cors";
 import { config } from "dotenv";
 import express, { NextFunction, Request, Response } from "express";
 import helmet from "helmet";
-import { connect } from "mongoose";
+import { verify } from "jsonwebtoken";
+import { connect, isValidObjectId } from "mongoose";
 import { exit } from "node:process";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 
@@ -70,14 +71,23 @@ if (MONGODB_URL)
         // eslint-disable-next-line no-console
         console.log(`Server: http://localhost:${port}`),
       );
+
       const io = socketConfig.initializeIO(server);
       io.use((socket, next) => {
-        try {
-          const _token = socket.handshake.auth.token;
-          next();
-        } catch {
-          next(new Error("Not Authenticated"));
-        }
+        const token = socket.handshake.auth.token;
+
+        if (!isValidObjectId(socket.handshake.auth.userId))
+          return next(new Error("Invalid userid"));
+
+        verify(
+          token,
+          process.env.JWT_SECRET_KEY!,
+          { complete: true },
+          (error) => {
+            if (error) return next(new Error(error.message));
+            next();
+          },
+        );
       });
 
       io.on("connection", (socket) => {
