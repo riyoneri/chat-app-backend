@@ -22,7 +22,7 @@ const userSchema = new Schema(
     username: { type: String, required: true },
     email: {
       value: { type: String, required: true },
-      verified: { type: Boolean, required: true, default: true },
+      verified: { type: Boolean, required: true, default: false },
     },
     imageUrl: { type: String, required: true },
     chatUsers: {
