@@ -11,6 +11,7 @@ import { exit } from "node:process";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 
 import userAuthroute from "./routes/user-auth.route";
+import userRoutes from "./routes/user.route";
 import {
   addSocketClient,
   removeSocketClient,
@@ -51,6 +52,7 @@ app.use((request: Request, response: Response, next: NextFunction) => {
 app.use(busboy({ limits: { files: 1, fileSize: 1024 * 1024 * 4 } }));
 
 app.use("/auth", userAuthroute);
+app.use("/users", userRoutes);
 
 app.use((_, response: Response) => {
   response.status(404).json({ message: "URL does not exist" });
