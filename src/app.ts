@@ -4,13 +4,14 @@ import busboy from "connect-busboy";
 import cors from "cors";
 import { config } from "dotenv";
 import express, { NextFunction, Request, Response } from "express";
-import { expressjwt } from "express-jwt";
+import { Request as JWTRequest, expressjwt } from "express-jwt";
 import helmet from "helmet";
 import { verify } from "jsonwebtoken";
 import { connect, isValidObjectId } from "mongoose";
 import { exit } from "node:process";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 
+import User from "./models/user.model";
 import userAuthroute from "./routes/user-auth.route";
 import userRoutes from "./routes/user.route";
 import {
@@ -41,13 +42,6 @@ app.disable("x-powered-by");
 app.use(cors());
 app.use(bodyParser.json());
 
-app.use(
-  expressjwt({
-    secret: process.env.JWT_SECRET_KEY!,
-    algorithms: ["HS256"],
-  }).unless({ path: /^\/auth/ }),
-);
-
 app.use((request: Request, response: Response, next: NextFunction) => {
   rateLimiter
     .consume(request.ip!)
@@ -56,6 +50,36 @@ app.use((request: Request, response: Response, next: NextFunction) => {
     })
     .catch(() => response.status(429).json({ message: "Too many requests" }));
 });
+
+app.use(
+  expressjwt({
+    secret: process.env.JWT_SECRET_KEY!,
+    algorithms: ["HS256"],
+  }).unless({ path: /^\/auth/ }),
+);
+
+app.use(
+  async (request: JWTRequest, _response: Response, next: NextFunction) => {
+    try {
+      if (request.auth?.id) {
+        if (!isValidObjectId(request.auth?.id))
+          throw new Error("User id is not valid");
+
+        const user = await User.findById(request.auth.id);
+
+        if (!user) throw new Error("User not found");
+
+        request.user = user;
+        return next();
+      }
+
+      next();
+    } catch {
+      const error = new CustomError("Internal server error.", 500);
+      next(error);
+    }
+  },
+);
 
 app.use(busboy({ limits: { files: 1, fileSize: 1024 * 1024 * 4 } }));
 
