@@ -4,6 +4,7 @@ import busboy from "connect-busboy";
 import cors from "cors";
 import { config } from "dotenv";
 import express, { NextFunction, Request, Response } from "express";
+import { expressjwt } from "express-jwt";
 import helmet from "helmet";
 import { verify } from "jsonwebtoken";
 import { connect, isValidObjectId } from "mongoose";
@@ -40,6 +41,13 @@ app.disable("x-powered-by");
 app.use(cors());
 app.use(bodyParser.json());
 
+app.use(
+  expressjwt({
+    secret: process.env.JWT_SECRET_KEY!,
+    algorithms: ["HS256"],
+  }).unless({ path: /^\/auth/ }),
+);
+
 app.use((request: Request, response: Response, next: NextFunction) => {
   rateLimiter
     .consume(request.ip!)
@@ -60,8 +68,11 @@ app.use((_, response: Response) => {
 
 app.use(
   (error: CustomError, _: Request, response: Response, next: NextFunction) => {
-    const { message, errors, statusCode } = error;
+    const { message, errors } = error;
+    let { statusCode } = error;
+
     if (response.headersSent) return next(error);
+    if (error.name === "UnauthorizedError") statusCode = 401;
     response.status(statusCode || 500).json({ message: errors || message });
   },
 );
