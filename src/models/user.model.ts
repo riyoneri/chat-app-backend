@@ -8,9 +8,8 @@ export interface IUserModel extends Document {
     verified: boolean;
   };
   imageUrl: string;
-  chatUsers: [string, string];
+  chatUsers: Schema.Types.ObjectId[];
   password: string;
-  createdAt: Date;
   tokens: {
     emailVerification: string;
   };
