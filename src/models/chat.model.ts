@@ -1,3 +1,4 @@
+import { Request } from "express";
 import { Document, Schema, model } from "mongoose";
 
 export interface IChatModel extends Document {
@@ -9,6 +10,7 @@ export interface IChatModel extends Document {
     text: string;
     sender: Schema.Types.ObjectId;
   };
+  toCustomObject: (request: Request) => void;
 }
 
 const chatSchema = new Schema<IChatModel>(
@@ -44,13 +46,31 @@ const chatSchema = new Schema<IChatModel>(
     toJSON: {
       transform: (document, returnValue) => {
         delete returnValue._id;
+        const { id } = returnValue.lastMessage.sender;
+
         return {
           id: document.id,
           ...returnValue,
+          lastMessage: {
+            ...returnValue.lastMessage,
+            sender: id,
+          },
         };
       },
     },
   },
 );
+
+chatSchema.methods.toCustomObject = function (request: Request) {
+  const chat = this.toJSON();
+  const participant =
+    request.user?.id === chat.participants.first.id
+      ? chat.participants.last
+      : chat.participants.first;
+
+  delete chat.participants;
+
+  return { ...chat, participant };
+};
 
 export default model<IChatModel>("Chat", chatSchema);
