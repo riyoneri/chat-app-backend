@@ -15,11 +15,7 @@ import User from "./models/user.model";
 import chatRoutes from "./routes/chat.route";
 import userAuthroute from "./routes/user-auth.route";
 import userRoutes from "./routes/user.route";
-import {
-  addSocketClient,
-  removeSocketClient,
-  config as socketConfig,
-} from "./socket";
+import { addSocketClient, removeSocketClient, socketConfig } from "./socket";
 import CustomError from "./utils/custom-error";
 
 config();
