@@ -15,7 +15,7 @@ export interface IUserModel extends Document {
   };
 }
 
-const userSchema = new Schema(
+const userSchema = new Schema<IUserModel>(
   {
     name: { type: String, required: true },
     username: { type: String, required: true },
@@ -44,7 +44,7 @@ const userSchema = new Schema(
         delete returnValue._id;
         delete returnValue.tokens;
         return {
-          id: document._id.toString(),
+          id: document.id,
           ...returnValue,
           email: returnValue.email.value,
           imageUrl: `${process.env.AWS_DISTRIBUTION_DOMAIN_NAME}/${returnValue.imageUrl}`,
