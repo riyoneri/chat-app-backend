@@ -35,8 +35,8 @@ export const createChat = async (
     request.user?.chatUsers.push(newChatUser.id);
     newChatUser.chatUsers.push(request.user?.id);
 
-    // await request.user?.save();
-    // await newChatUser.save();
+    await request.user?.save();
+    await newChatUser.save();
 
     const newChat = new Chat({
       participants: { first: request.user, last: newChatUser },
