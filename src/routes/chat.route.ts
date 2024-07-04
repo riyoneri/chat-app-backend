@@ -6,7 +6,7 @@ import * as chatController from "../controllers/chat.controller";
 const router = Router();
 
 router.post(
-  "/create",
+  "/",
   body("userId", "Enter valid user id")
     .isString()
     .notEmpty({ ignore_whitespace: true })
