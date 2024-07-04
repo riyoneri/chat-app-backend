@@ -26,7 +26,11 @@ export const createChat = async (
       return next(error);
     }
 
-    // if (request.user?.chatUsers.includes(newChatUser.id)) {}
+    if (request.user?.chatUsers.includes(newChatUser.id)) {
+      const error = new CustomError("A chat with user is already created", 400);
+
+      return next(error);
+    }
 
     request.user?.chatUsers.push(newChatUser.id);
     newChatUser.chatUsers.push(request.user?.id);
@@ -41,32 +45,33 @@ export const createChat = async (
 
     const savedChat = await newChat.save();
 
-    const populatedChat = await savedChat.populate(
-      "participants.first participants.last",
-      "name username email.value imageUrl",
-    );
+    response.status(200).json(savedChat.toCustomObject(request));
+  } catch {
+    const error = new CustomError("Internal server error.", 500);
+    next(error);
+  }
+};
 
-    const refactoredChat = populatedChat.toJSON({
-      transform(document, returnValue) {
-        if (!returnValue.participants) return returnValue;
-        delete returnValue._id;
+export const getAllChats = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  try {
+    const chats = await Chat.find({
+      $or: [
+        { "participants.first": request.user },
+        { "participants.last": request.user },
+      ],
+    })
+      .populate("participants.first participants.last")
+      .transform((documents) =>
+        documents.map((singleDocument) =>
+          singleDocument.toCustomObject(request),
+        ),
+      );
 
-        const participant =
-          returnValue.participants.first?.id === request.user?.id
-            ? returnValue.participants.last.toJSON()
-            : returnValue.participants.first.toJSON();
-
-        delete returnValue.participants;
-
-        return {
-          id: document.id,
-          ...returnValue,
-          participant,
-        };
-      },
-    });
-
-    response.status(200).json(refactoredChat);
+    response.json(chats);
   } catch {
     const error = new CustomError("Internal server error.", 500);
     next(error);
