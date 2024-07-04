@@ -11,7 +11,7 @@ let socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>;
 
 export let clients: Client[] = [];
 
-export const config = {
+export const socketConfig = {
   initializeIO: (httpServer: import("http").Server) => {
     io = new Server(httpServer, { cors: { origin: "*" } });
     return io;
@@ -52,3 +52,6 @@ export const removeSocketClient = (userId: string) => {
 
   return removedClient;
 };
+
+export const getSocketClient = (userId: string) =>
+  clients.find((client) => client.userId === userId)?.socketId;
