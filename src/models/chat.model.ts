@@ -1,6 +1,8 @@
 import { Request } from "express";
 import { Document, Schema, model } from "mongoose";
 
+import { IUserModel } from "./user.model";
+
 export interface IChatModel extends Document {
   participants: {
     first: Schema.Types.ObjectId;
@@ -10,10 +12,12 @@ export interface IChatModel extends Document {
     text: string;
     sender: Schema.Types.ObjectId;
   };
-  toCustomObject: (request: Request) => void;
+  toCustomObject: (
+    request: Request,
+  ) => Omit<IChatModel, "participants"> & { participant: IUserModel };
 }
 
-const chatSchema = new Schema<IChatModel>(
+const chatSchema = new Schema(
   {
     participants: {
       type: {

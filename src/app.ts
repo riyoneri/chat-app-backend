@@ -30,7 +30,7 @@ const port = process.env.PORT || 5000;
 
 const rateLimiter = new RateLimiterMemory({
   points: 6,
-  duration: 10,
+  duration: 2,
 });
 
 app.use(compression());
