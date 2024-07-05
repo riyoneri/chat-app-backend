@@ -15,7 +15,12 @@ import User from "./models/user.model";
 import chatRoutes from "./routes/chat.route";
 import userAuthroute from "./routes/user-auth.route";
 import userRoutes from "./routes/user.route";
-import { addSocketClient, removeSocketClient, socketConfig } from "./socket";
+import {
+  addSocketClient,
+  clients,
+  removeSocketClient,
+  socketConfig,
+} from "./socket";
 import CustomError from "./utils/custom-error";
 
 config();
@@ -129,9 +134,15 @@ if (MONGODB_URL)
         socketConfig.initializeSocket(socket);
         addSocketClient(socket.handshake.auth.userId, socket.id);
 
-        socket.on("disconnect", () =>
-          removeSocketClient(socket.handshake.auth.userId),
-        );
+        io.to(socket.id).emit("chat:active", clients);
+
+        socket.on("disconnect", () => {
+          const removedClient = removeSocketClient(
+            socket.handshake.auth.userId,
+          );
+
+          socket.emit("chat:inactive", removedClient);
+        });
       });
     })
     // eslint-disable-next-line unicorn/prefer-top-level-await
