@@ -52,7 +52,10 @@ export const createChat = async (
 
     if (newchatUserSocket) {
       const socket = socketConfig.getSocket();
-      socket.to(newchatUserSocket).emit("chat:create");
+
+      socket.to(newchatUserSocket).emit("chat:create", () => {
+        socket.to(newchatUserSocket).emit("chat:active", clients);
+      });
     }
 
     response.status(200).json(customChatObject);
