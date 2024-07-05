@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import customValidationResult from "../helpers/validation-results";
 import Chat from "../models/chat.model";
 import User from "../models/user.model";
-import { getSocketClient, socketConfig } from "../socket";
+import { clients, getSocketClient, socketConfig } from "../socket";
 import CustomError from "../utils/custom-error";
 
 export const createChat = async (

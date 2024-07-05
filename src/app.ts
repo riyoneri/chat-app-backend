@@ -134,14 +134,14 @@ if (MONGODB_URL)
         socketConfig.initializeSocket(socket);
         addSocketClient(socket.handshake.auth.userId, socket.id);
 
-        io.to(socket.id).emit("chat:active", clients);
+        io.emit("chat:active", clients);
 
         socket.on("disconnect", () => {
           const removedClient = removeSocketClient(
             socket.handshake.auth.userId,
           );
 
-          socket.emit("chat:inactive", removedClient);
+          socket.broadcast.emit("chat:inactive", removedClient);
         });
       });
     })
