@@ -9,7 +9,7 @@
     "prepare": "npx husky"
   },
   "keywords": [],
-  "author": "",
+  "author": "Lionel Kaneza",
   "license": "ISC",
   "description": "",
   "lint-staged": {
