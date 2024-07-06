@@ -42,4 +42,4 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd chatly/
-            npx pm2 reload 0
+            pm2 reload 0
