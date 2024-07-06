@@ -136,12 +136,19 @@ if (MONGODB_URL)
 
         io.emit("chat:active", clients);
 
+        socket.on("user:logout", (userId) => {
+          const removedClient = removeSocketClient(userId);
+          removedClient &&
+            socket.broadcast.emit("chat:inactive", removedClient);
+        });
+
         socket.on("disconnect", () => {
           const removedClient = removeSocketClient(
             socket.handshake.auth.userId,
           );
 
-          socket.broadcast.emit("chat:inactive", removedClient);
+          removedClient &&
+            socket.broadcast.emit("chat:inactive", removedClient);
         });
       });
     })
