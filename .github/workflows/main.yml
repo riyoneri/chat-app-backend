@@ -1,4 +1,4 @@
-name: Chatly backend on AWS EC2
+name: Deploy the app
 
 on:
   push:
