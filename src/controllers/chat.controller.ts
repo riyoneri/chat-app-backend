@@ -71,6 +71,7 @@ export const getAllChats = async (
   next: NextFunction,
 ) => {
   try {
+    const socket = socketConfig.getSocket();
     const chats = await Chat.find({
       $or: [
         { "participants.first": request.user },
@@ -83,6 +84,8 @@ export const getAllChats = async (
           singleDocument.toCustomObject(request),
         ),
       );
+
+    socket.emit("chat:active", clients);
 
     response.json(chats);
   } catch {
