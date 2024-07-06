@@ -19,8 +19,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # - name: Build the app
-      #   run: npm run build
+      - name: Build the app
+        run: npm run build
 
       - name: Deploy to AWS EC2
         uses: appleboy/scp-action@master
