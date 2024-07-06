@@ -17,7 +17,7 @@ export interface IChatModel extends Document {
   ) => Omit<IChatModel, "participants"> & { participant: IUserModel };
 }
 
-const chatSchema = new Schema(
+const chatSchema = new Schema<IChatModel>(
   {
     participants: {
       type: {
@@ -50,14 +50,13 @@ const chatSchema = new Schema(
     toJSON: {
       transform: (document, returnValue) => {
         delete returnValue._id;
-        const { id } = returnValue.lastMessage.sender;
 
         return {
           id: document.id,
           ...returnValue,
           lastMessage: {
             ...returnValue.lastMessage,
-            sender: id,
+            sender: returnValue.lastMessage.sender.toString(),
           },
         };
       },
