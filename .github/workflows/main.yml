@@ -9,6 +9,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+
       - uses: actions/checkout@v4
 
       - name: Install dependencies
@@ -26,10 +31,8 @@ jobs:
           source: "./,!./src/"
           target: "chatly/"
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "latest"
+      - name: Install PM2
+        run: npm install -g pm2
 
       - name: Restart PM2 application
         uses: appleboy/ssh-action@master
