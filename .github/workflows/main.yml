@@ -31,9 +31,6 @@ jobs:
           source: "./,!./src/"
           target: "chatly/"
 
-      - name: Install PM2
-        run: npm install -g pm2
-
       - name: Restart PM2 application
         uses: appleboy/ssh-action@master
         with:
