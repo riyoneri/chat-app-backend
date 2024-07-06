@@ -109,7 +109,7 @@ if (MONGODB_URL)
     .then(() => {
       const server = app.listen(port, () =>
         // eslint-disable-next-line no-console
-        console.log(`Server: reached here`),
+        console.log(`Server: http://localhost:${port}`),
       );
 
       const io = socketConfig.initializeIO(server);

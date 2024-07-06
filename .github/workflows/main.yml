@@ -19,8 +19,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build the app
-        run: npm run build
+      # - name: Build the app
+      #   run: npm run build
 
       - name: Deploy to AWS EC2
         uses: appleboy/scp-action@master
@@ -28,8 +28,8 @@ jobs:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "./,!./src/"
-          target: "chatly/"
+          source: "dist,package*"
+          target: "chatly"
 
       - name: Restart PM2 application
         uses: appleboy/ssh-action@master
@@ -38,5 +38,5 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd chatly/
+            cd chatly
             pm2 reload 0
