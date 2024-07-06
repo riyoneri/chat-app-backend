@@ -4,7 +4,6 @@ import eslintConfigPrettier from "eslint-config-prettier";
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
 import tseslint from "typescript-eslint";
 
-
 export default [
   ...[
     eslint.configs.recommended,
@@ -50,7 +49,7 @@ export default [
       "no-var": "error",
       "operator-assignment": ["error", "always"],
       "prefer-arrow-callback": "error",
-      "unicorn/no-array-reduce": "off"
+      "unicorn/no-array-reduce": "off",
     },
   },
 ];
