@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 
 import * as chatController from "../controllers/chat.controller";
 
@@ -17,6 +17,16 @@ router
       .withMessage("You can not create chat with yourself"),
     chatController.createChat,
   )
-  .get("/", chatController.getAllChats);
+  .get("/", chatController.getAllChats)
+  .get(
+    "/:chatId",
+    [
+      param("chatId", "Id in params is invalid")
+        .isString()
+        .notEmpty({ ignore_whitespace: true })
+        .isMongoId(),
+    ],
+    chatController.getSingleChat,
+  );
 
 export default router;
