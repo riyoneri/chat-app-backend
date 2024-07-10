@@ -93,3 +93,41 @@ export const getAllChats = async (
     next(error);
   }
 };
+
+export const getSingleChat = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  try {
+    const validationResults = customValidationResult(request);
+    if (validationResults) {
+      const error = new CustomError("Validation error", 400, validationResults);
+
+      return next(error);
+    }
+
+    const chat = await Chat.findOne({
+      $and: [
+        { _id: request.params.chatId },
+        {
+          $or: [
+            { "participants.first": request.user },
+            { "participants.last": request.user },
+          ],
+        },
+      ],
+    });
+
+    if (!chat) {
+      const error = new CustomError("Chat not found", 404);
+
+      return next(error);
+    }
+
+    response.status(200).json("lion");
+  } catch {
+    const error = new CustomError("Internal server error.", 500);
+    next(error);
+  }
+};
