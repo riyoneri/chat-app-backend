@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 import customValidationResult from "../helpers/validation-results";
 import Chat from "../models/chat.model";
+import Message from "../models/message.model";
 import User from "../models/user.model";
 import { clients, getSocketClient, socketConfig } from "../socket";
 import CustomError from "../utils/custom-error";
@@ -117,7 +118,7 @@ export const getSingleChat = async (
           ],
         },
       ],
-    });
+    }).populate("participants.first participants.last");
 
     if (!chat) {
       const error = new CustomError("Chat not found", 404);
@@ -125,7 +126,15 @@ export const getSingleChat = async (
       return next(error);
     }
 
-    response.status(200).json("lion");
+    const chatMessages = await Message.find()
+      .sort("-1")
+      .transform((documents) =>
+        documents.map((singleDocument) => singleDocument.toJSON()),
+      );
+
+    response
+      .status(200)
+      .json({ chat: chat.toCustomObject(request), messages: chatMessages });
   } catch {
     const error = new CustomError("Internal server error.", 500);
     next(error);
