@@ -87,7 +87,7 @@ app.use(busboy({ limits: { files: 1, fileSize: 1024 * 1024 * 4 } }));
 
 app.use("/auth", userAuthroute);
 app.use("/users", userRoutes);
-app.use("/chat", chatRoutes);
+app.use("/chats", chatRoutes);
 
 app.use((_, response: Response) => {
   response.status(404).json({ message: "URL does not exist" });
