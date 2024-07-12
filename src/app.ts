@@ -18,6 +18,7 @@ import userRoutes from "./routes/user.route";
 import {
   addSocketClient,
   clients,
+  getSocketClient,
   removeSocketClient,
   socketConfig,
 } from "./socket";
@@ -135,6 +136,15 @@ if (MONGODB_URL)
         addSocketClient(socket.handshake.auth.userId, socket.id);
 
         io.emit("chat:active", clients);
+
+        socket.on(
+          "chat:typing",
+          ({ receiver, sender }: { receiver: string; sender: string }) => {
+            const userSocket = getSocketClient(receiver);
+
+            userSocket && socket.to(userSocket).emit("chat:typing", sender);
+          },
+        );
 
         socket.on("user:logout", (userId) => {
           const removedClient = removeSocketClient(userId);
