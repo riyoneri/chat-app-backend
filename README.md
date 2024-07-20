@@ -51,13 +51,9 @@ RESEND_API_KEY=your-resend-api-key
 JWT_SECRET_KEY=your-jwt-secret-key
 ```
 
-> [!NOTE]
-
 > **Amazon S3 (AWS)**: Amazon S3, provided by AWS, is a scalable and reliable cloud-based storage service. It’s ideal for storing user profile pictures and chat attachments in your app.
 >
 > > [Documentation](https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html)
-
-> [!NOTE]
 
 > **MongoDB**: MongoDB, a flexible NoSQL database, stores data in JSON-like documents. It’s perfect for chat apps due to its adaptability and powerful querying capabilities.
 >
@@ -65,7 +61,6 @@ JWT_SECRET_KEY=your-jwt-secret-key
 > > [MongoDb](https://www.mongodb.com/docs/atlas/app-services/functions/mongodb/api/)
 
 > [!NOTE]
-
 > **JSON Web Tokens (JWT)**: JWTs (JSON Web Tokens) securely transmit information between parties and are commonly used for authentication and data encryption in chat apps.
 >
 > > [Documentation](https://www.npmjs.com/package/jsonwebtoken)
