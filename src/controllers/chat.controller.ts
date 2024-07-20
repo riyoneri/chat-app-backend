@@ -42,6 +42,7 @@ export const createChat = async (
 
     const newChat = new Chat({
       participants: { first: request.user, last: newChatUser },
+      unreads: { first: { id: request.user }, last: { id: newChatUser } },
       lastMessage: { text: "New chat", sender: request.user },
     });
 

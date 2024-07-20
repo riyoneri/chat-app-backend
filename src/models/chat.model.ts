@@ -1,20 +1,24 @@
 import { Request } from "express";
-import { Document, Schema, model } from "mongoose";
+import { Schema, Types, model } from "mongoose";
 
 import { IUserModel } from "./user.model";
 
-export interface IChatModel extends Document {
+export interface IChatModel {
   participants: {
-    first: Schema.Types.ObjectId;
-    last: Schema.Types.ObjectId;
+    first: Types.ObjectId;
+    last: Types.ObjectId;
   };
   lastMessage: {
     text: string;
-    sender: Schema.Types.ObjectId;
+    sender: Types.ObjectId;
   };
   toCustomObject: (
     request: Request,
   ) => Omit<IChatModel, "participants"> & { participant: IUserModel };
+  unreads: {
+    first: { number: number; id: Types.ObjectId };
+    last: { number: number; id: Types.ObjectId };
+  };
 }
 
 const chatSchema = new Schema<IChatModel>(
@@ -43,6 +47,28 @@ const chatSchema = new Schema<IChatModel>(
       required: true,
       _id: false,
     },
+    unreads: {
+      type: {
+        first: {
+          type: {
+            number: { type: Number, required: true, default: 0 },
+            id: { type: Schema.Types.ObjectId, required: true },
+          },
+          required: true,
+          _id: false,
+        },
+        last: {
+          type: {
+            number: { type: Number, required: true, default: 0 },
+            id: { type: Schema.Types.ObjectId, required: true },
+          },
+          required: true,
+          _id: false,
+        },
+      },
+      required: true,
+      _id: false,
+    },
   },
   {
     versionKey: false,
@@ -54,10 +80,6 @@ const chatSchema = new Schema<IChatModel>(
         return {
           id: document.id,
           ...returnValue,
-          lastMessage: {
-            ...returnValue.lastMessage,
-            sender: returnValue.lastMessage.sender.toString(),
-          },
         };
       },
     },
@@ -71,9 +93,15 @@ chatSchema.methods.toCustomObject = function (request: Request) {
       ? chat.participants.last
       : chat.participants.first;
 
-  delete chat.participants;
+  const unread =
+    request.user?.id === chat.unreads.first.id.toString()
+      ? chat.unreads.first.number
+      : chat.unreads.last.id.number;
 
-  return { ...chat, participant };
+  delete chat.participants;
+  delete chat.unreads;
+
+  return { ...chat, participant, unread };
 };
 
 export default model<IChatModel>("Chat", chatSchema);
