@@ -51,16 +51,22 @@ RESEND_API_KEY=your-resend-api-key
 JWT_SECRET_KEY=your-jwt-secret-key
 ```
 
-> [!NOTE] > **Amazon S3 (AWS)**: Amazon S3, provided by AWS, is a scalable and reliable cloud-based storage service. It’s ideal for storing user profile pictures and chat attachments in your app.
+> [!NOTE]
+
+> **Amazon S3 (AWS)**: Amazon S3, provided by AWS, is a scalable and reliable cloud-based storage service. It’s ideal for storing user profile pictures and chat attachments in your app.
 >
 > > [Documentation](https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html)
 
-> [!NOTE] > **MongoDB**: MongoDB, a flexible NoSQL database, stores data in JSON-like documents. It’s perfect for chat apps due to its adaptability and powerful querying capabilities.
+> [!NOTE]
+
+> **MongoDB**: MongoDB, a flexible NoSQL database, stores data in JSON-like documents. It’s perfect for chat apps due to its adaptability and powerful querying capabilities.
 >
 > > [Mongoose](https://mongoosejs.com/docs/) &
 > > [MongoDb](https://www.mongodb.com/docs/atlas/app-services/functions/mongodb/api/)
 
-> [!NOTE] > **JSON Web Tokens (JWT)**: JWTs (JSON Web Tokens) securely transmit information between parties and are commonly used for authentication and data encryption in chat apps.
+> [!NOTE]
+
+> **JSON Web Tokens (JWT)**: JWTs (JSON Web Tokens) securely transmit information between parties and are commonly used for authentication and data encryption in chat apps.
 >
 > > [Documentation](https://www.npmjs.com/package/jsonwebtoken)
 
@@ -74,10 +80,13 @@ npm run dev
 > The server will run on port `3000` by default. You can change this in the app.ts file.
 
 ## Real-Time Chat
+
 We use Socket.io for real-time communication. When a user sends a message, it’s saved to MongoDB and broadcasted to all connected clients.
 
 ## Contributing
+
 Feel free to contribute by opening issues or submitting pull requests. Let’s make this chat app even better!
 
 ## License
+
 This project is licensed under the MIT License - see the LICENSE file for details.
