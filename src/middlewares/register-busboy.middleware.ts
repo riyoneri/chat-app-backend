@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 import CustomError from "../utils/custom-error";
 
-export default function busboy(
+export default function registerBusboyMiddleware(
   request: Request,
   _response: Response,
   next: NextFunction,
