@@ -84,11 +84,17 @@ app.use(
   },
 );
 
-app.use(busboy({ limits: { files: 1, fileSize: 1024 * 1024 * 4 } }));
-
-app.use("/auth", userAuthroute);
+app.use(
+  "/auth",
+  busboy({ limits: { files: 1, fileSize: 1024 * 1024 * 4 } }),
+  userAuthroute,
+);
 app.use("/users", userRoutes);
-app.use("/chats", chatRoutes);
+app.use(
+  "/chats",
+  busboy({ limits: { files: 3, fileSize: 1024 * 1024 * 10 } }),
+  chatRoutes,
+);
 
 app.use((_, response: Response) => {
   response.status(404).json({ message: "URL does not exist" });

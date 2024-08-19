@@ -2,7 +2,7 @@ import { Router } from "express";
 import { body } from "express-validator";
 
 import * as userAuthController from "../controllers/user-auth.controller";
-import busboyMiddleware from "../middlewares/busboy.middleware";
+import registerBusboyMiddleware from "../middlewares/register-busboy.middleware";
 import User from "../models/user.model";
 
 const router = Router();
@@ -10,7 +10,7 @@ const router = Router();
 router
   .post(
     "/register",
-    busboyMiddleware,
+    registerBusboyMiddleware,
     [
       body("name", "Name is required")
         .isString()
