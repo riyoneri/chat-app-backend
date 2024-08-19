@@ -3,7 +3,7 @@ import { Schema, Types, model } from "mongoose";
 enum FileType {
   IMAGE = "image",
   VIDEO = "video",
-  FILE = "file",
+  VOICE_NOTE = "voice-note",
 }
 
 enum MessageState {
@@ -13,7 +13,7 @@ enum MessageState {
 }
 
 interface IMessage {
-  conversationId: Types.ObjectId;
+  chatId: Types.ObjectId;
   senderId: Types.ObjectId;
   text?: string;
   state: MessageState;
@@ -22,15 +22,20 @@ interface IMessage {
 
 const messageSchema = new Schema<IMessage>(
   {
-    conversationId: {
+    chatId: {
       type: Schema.Types.ObjectId,
       ref: "Chat",
       required: true,
     },
     senderId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    state: { type: String, required: true, enum: MessageState },
+    state: {
+      type: String,
+      required: true,
+      enum: MessageState,
+      default: MessageState.DELIVERED,
+    },
     text: String,
-    files: [{ name: String, enum: FileType, type: String }],
+    files: [{ name: String, enum: FileType, type: String, _id: false }],
   },
   {
     versionKey: false,
