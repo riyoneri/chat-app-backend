@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { debug } from "node:console";
 
 import customValidationResult from "../helpers/validation-results";
 import Chat from "../models/chat.model";
@@ -136,6 +137,27 @@ export const getSingleChat = async (
     response
       .status(200)
       .json({ chat: chat.toCustomObject(request), messages: chatMessages });
+  } catch {
+    const error = new CustomError("Internal server error.", 500);
+    next(error);
+  }
+};
+
+export const createMessage = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  try {
+    const validationResults = customValidationResult(request);
+    if (validationResults) {
+      const error = new CustomError("Validation error", 400, validationResults);
+
+      debug(validationResults);
+      return next(error);
+    }
+
+    response.status(400).json("Lion");
   } catch {
     const error = new CustomError("Internal server error.", 500);
     next(error);
