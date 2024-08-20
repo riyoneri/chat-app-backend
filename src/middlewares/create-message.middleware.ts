@@ -58,7 +58,15 @@ export default function createMessageMiddleware(
         return;
       }
 
+      let fileSizeLimit: number;
+      if (name === "image") {
+        fileSizeLimit = 5 * 1024 * 1024; // 5 MB
+      } else if (name === "video") {
+        fileSizeLimit = 10 * 1024 * 1024; // 10 MB
+      }
+
       const buffers: Uint8Array[] = [];
+      let uploadedSize = 0;
 
       file
         .on("limit", () => {
@@ -70,11 +78,22 @@ export default function createMessageMiddleware(
 
           file.resume();
         })
-        .on("data", (chunk) => buffers.push(chunk))
+        .on("data", (chunk) => {
+          uploadedSize += chunk.length;
+
+          if (uploadedSize > fileSizeLimit) {
+            request.body[`${name}Error`] =
+              `${name.charAt(0).toUpperCase() + name.slice(1)} is too large. Maximum size is ${fileSizeLimit / (1024 * 1024)}MB`;
+            file.resume();
+
+            return;
+          }
+          buffers.push(chunk);
+        })
         .on("end", () => (request.body[name] = Buffer.concat(buffers)));
     })
     .on("filesLimit", () => {
-      request.body.fileError = "Too many files. Maximum is 1";
+      request.body.fileError = "Too many files. Maximum is 3";
     })
     .on("field", (name, value) => {
       request.body[name] = value;
