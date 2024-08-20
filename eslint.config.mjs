@@ -2,6 +2,7 @@
 import eslint from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
+import unusedImports from "eslint-plugin-unused-imports";
 import tseslint from "typescript-eslint";
 
 export default [
@@ -10,23 +11,13 @@ export default [
     ...tseslint.configs.recommended,
     eslintPluginUnicorn.configs["flat/recommended"],
     eslintConfigPrettier,
-  ].map((config) => ({ ...config, ignores: ["dist/**/*"] })),
-  {
+  ].map((config) => ({
+    ...config,
     ignores: ["dist/**/*"],
+  })),
+  {
     rules: {
       "no-console": "error",
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        {
-          args: "all",
-          argsIgnorePattern: "^_",
-          caughtErrors: "all",
-          caughtErrorsIgnorePattern: "^_",
-          destructuredArrayIgnorePattern: "^_",
-          varsIgnorePattern: "^_",
-          ignoreRestSiblings: false,
-        },
-      ],
       "arrow-body-style": ["error", "as-needed"],
       eqeqeq: ["error", "always"],
       "no-constructor-return": "error",
@@ -50,6 +41,28 @@ export default [
       "operator-assignment": ["error", "always"],
       "prefer-arrow-callback": "error",
       "unicorn/no-array-reduce": "off",
+    },
+  },
+  {
+    plugins: {
+      "unused-imports": unusedImports,
+    },
+    rules: {
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "unused-imports/no-unused-imports": "warn",
+      "unused-imports/no-unused-vars": [
+        "error",
+        {
+          args: "all",
+          argsIgnorePattern: "^_",
+          caughtErrors: "all",
+          caughtErrorsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          ignoreRestSiblings: false,
+        },
+      ],
     },
   },
 ];
