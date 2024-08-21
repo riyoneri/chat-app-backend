@@ -58,12 +58,7 @@ export default function createMessageMiddleware(
         return;
       }
 
-      let fileSizeLimit: number;
-      if (name === "image") {
-        fileSizeLimit = 5 * 1024 * 1024; // 5 MB
-      } else if (name === "video") {
-        fileSizeLimit = 10 * 1024 * 1024; // 10 MB
-      }
+      const fileSizeLimit: number = 5 * 1024 * 1024;
 
       const buffers: Uint8Array[] = [];
       let uploadedSize = 0;
