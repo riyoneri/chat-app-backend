@@ -1,12 +1,12 @@
 import { Schema, Types, model } from "mongoose";
 
-enum FileType {
+export enum FileType {
   IMAGE = "image",
   VIDEO = "video",
   VOICE_NOTE = "voice-note",
 }
 
-enum MessageState {
+export enum MessageState {
   PENDING = "pending",
   DELIVERED = "delivered",
   SEEN = "seen",
@@ -35,7 +35,13 @@ const messageSchema = new Schema<IMessage>(
       default: MessageState.DELIVERED,
     },
     text: String,
-    files: [{ name: String, enum: FileType, type: String, _id: false }],
+    files: [
+      {
+        name: { type: String, required: true },
+        type: { type: String, required: true, enum: FileType },
+        _id: false,
+      },
+    ],
   },
   {
     versionKey: false,
