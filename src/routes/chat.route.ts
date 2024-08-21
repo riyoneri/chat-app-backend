@@ -2,6 +2,7 @@ import { Router } from "express";
 import { body, param } from "express-validator";
 
 import * as chatController from "../controllers/chat.controller";
+import chatIdValidatorMiddleware from "../middlewares/chat-id-validator.middleware";
 import createMessageMiddleware from "../middlewares/create-message.middleware";
 
 const router = Router();
@@ -30,7 +31,9 @@ router
     chatController.getSingleChat,
   )
   .post(
-    "/message",
+    "/message/:chatId",
+    param("chatId").notEmpty({ ignore_whitespace: true }).isMongoId().trim(),
+    chatIdValidatorMiddleware,
     createMessageMiddleware,
     [
       body("text", "Message is required").optional({ values: "undefined" }),
