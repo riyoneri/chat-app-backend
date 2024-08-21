@@ -1,9 +1,13 @@
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { Upload } from "@aws-sdk/lib-storage";
 import { NextFunction, Request, Response } from "express";
-import { debug } from "node:console";
+import { nanoid } from "nanoid";
+import sharp from "sharp";
 
+import getClient from "../helpers/s3client";
 import customValidationResult from "../helpers/validation-results";
 import Chat from "../models/chat.model";
-import Message from "../models/message.model";
+import Message, { FileType } from "../models/message.model";
 import User from "../models/user.model";
 import { clients, getSocketClient, socketConfig } from "../socket";
 import CustomError from "../utils/custom-error";
@@ -148,17 +152,91 @@ export const createMessage = async (
   response: Response,
   next: NextFunction,
 ) => {
+  let imageUploadInfo = {
+    isUploaded: false,
+    key: "",
+  };
+
+  let videoUploadInfo = {
+    isUploaded: false,
+    key: "",
+  };
+
   try {
+    const messagefiles = [];
+
     const validationResults = customValidationResult(request);
     if (validationResults) {
       const error = new CustomError("Validation error", 400, validationResults);
 
-      debug(validationResults);
       return next(error);
     }
 
-    response.status(400).json("Lion");
+    if (request.body.image) {
+      const resizedImage = await sharp(request.body.image)
+        .resize(1000, undefined, { fit: "contain" })
+        .toBuffer();
+
+      const { Key } = await new Upload({
+        client: getClient(),
+        params: {
+          Bucket: process.env.AWS_BUCKET_NAME!,
+          Key: `ySQm/${nanoid(10)}.webp`,
+          Body: resizedImage,
+        },
+      }).done();
+
+      imageUploadInfo = {
+        isUploaded: true,
+        key: Key ?? "",
+      };
+      messagefiles.push({ name: imageUploadInfo.key, type: FileType.IMAGE });
+    }
+
+    if (request.body.video) {
+      const { Key } = await new Upload({
+        client: getClient(),
+        params: {
+          Bucket: process.env.AWS_BUCKET_NAME!,
+          Key: `8EQl/${nanoid(10)}.mp4`,
+          Body: request.body.video,
+        },
+      }).done();
+
+      videoUploadInfo = {
+        isUploaded: true,
+        key: Key ?? "",
+      };
+      messagefiles.push({ name: Key, type: FileType.VIDEO });
+    }
+
+    const messageData = new Message({
+      chatId: request.params.chatId,
+      files: messagefiles,
+      senderId: request.user,
+      text: request.body.text,
+    });
+
+    await messageData.save();
+
+    response.status(200).json({ message: "Lion" });
   } catch {
+    imageUploadInfo.isUploaded &&
+      getClient().send(
+        new DeleteObjectCommand({
+          Bucket: process.env.AWS_BUCKET_NAME,
+          Key: imageUploadInfo.key,
+        }),
+      );
+
+    videoUploadInfo.isUploaded &&
+      getClient().send(
+        new DeleteObjectCommand({
+          Bucket: process.env.AWS_BUCKET_NAME,
+          Key: videoUploadInfo.key,
+        }),
+      );
+
     const error = new CustomError("Internal server error.", 500);
     next(error);
   }
