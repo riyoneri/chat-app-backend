@@ -4,6 +4,7 @@ import { body, param } from "express-validator";
 import * as chatController from "../controllers/chat.controller";
 import chatIdValidatorMiddleware from "../middlewares/chat-id-validator.middleware";
 import createMessageMiddleware from "../middlewares/create-message.middleware";
+import Chat from "../models/chat.model";
 
 const router = Router();
 
@@ -32,7 +33,24 @@ router
   )
   .post(
     "/message/:chatId",
-    param("chatId").notEmpty({ ignore_whitespace: true }).isMongoId().trim(),
+    param("chatId")
+      .notEmpty({ ignore_whitespace: true })
+      .isMongoId()
+      .trim()
+      .custom((_value, { req }) =>
+        Chat.findOne({
+          $or: [
+            {
+              "participants.first": req.user,
+            },
+            {
+              "participants.last": req.user,
+            },
+          ],
+        }).then((chat) => {
+          if (!chat) throw "Chat id is invalid";
+        }),
+      ),
     chatIdValidatorMiddleware,
     createMessageMiddleware,
     [
