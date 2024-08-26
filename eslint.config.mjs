@@ -5,6 +5,7 @@ import eslintPluginUnicorn from "eslint-plugin-unicorn";
 import unusedImports from "eslint-plugin-unused-imports";
 import tseslint from "typescript-eslint";
 
+
 export default [
   ...[
     eslint.configs.recommended,
@@ -23,16 +24,6 @@ export default [
       "no-constructor-return": "error",
       "no-duplicate-imports": "error",
       "no-self-compare": "error",
-      "no-use-before-define": "off",
-      "@typescript-eslint/no-use-before-define": [
-        "error",
-        {
-          functions: true,
-          classes: true,
-          variables: true,
-          allowNamedExports: true,
-        },
-      ],
       "no-else-return": "error",
       "no-lonely-if": "error",
       "no-negated-condition": "error",
