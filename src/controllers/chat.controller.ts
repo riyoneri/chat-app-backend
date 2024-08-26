@@ -219,6 +219,45 @@ export const createMessage = async (
 
     await messageData.save();
 
+    const chat = await Chat.findOne({ _id: request.params.chatId });
+
+    if (!chat) {
+      const error = new CustomError("Message receiver not found");
+      return next(error);
+    }
+
+    chat.lastMessage = {
+      text: request.body.text,
+      sender: request.user?.id,
+    };
+
+    const position =
+      chat.unreads.first.id._id.toString() === request.user?.id
+        ? "last"
+        : "first";
+
+    chat.unreads[position].number += 1;
+
+    await chat.save();
+
+    const messageReceiver =
+      chat.participants.first._id.toString() === request.user?.id
+        ? chat.participants.last._id.toString()
+        : chat.participants.first._id.toString();
+
+    if (!messageReceiver) {
+      const error = new CustomError("Message receiver not found");
+      return next(error);
+    }
+
+    const receiverSocket = getSocketClient(messageReceiver);
+
+    if (receiverSocket) {
+      const socket = socketConfig.getSocket();
+
+      socket.to(receiverSocket).emit("message:new");
+    }
+
     response.status(200).json({ message: "Lion" });
   } catch {
     imageUploadInfo.isUploaded &&
